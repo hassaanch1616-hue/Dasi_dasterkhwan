@@ -172,46 +172,34 @@ function renderAdminPortal() {
                         <p>${isUrdu ? "صرف ایڈمن کے لیے۔ لاگ ان کرنے کے لیے یوزر نیم اور پاس ورڈ درج کریں۔" : "Authorized Admin access only. Enter your credentials to login."}</p>
                     </div>
                     
-                    <form id="admin-login-form" class="admin-login-form" autocomplete="off">
-                        <!-- Dummy hidden inputs to block browser autofill -->
-                        <input type="text" name="fake_user" style="display:none;" tabindex="-1">
-                        <input type="password" name="fake_pass" style="display:none;" tabindex="-1">
-
+                    <div id="admin-login-form" class="admin-login-form">
                         <div class="form-group">
                             <label for="ad_usr_field"><i class="fas fa-user"></i> ${isUrdu ? "یوزر نیم (Username)" : "Username"}</label>
-                            <input type="text" id="ad_usr_field" name="ad_usr_field" required readonly onfocus="this.removeAttribute('readonly');" placeholder="${isUrdu ? 'اپنا یوزر نیم درج کریں...' : 'Enter your username...'}" class="form-control" autocomplete="new-password" value="">
+                            <input type="search" id="ad_usr_field" name="q_search_usr" required placeholder="${isUrdu ? 'اپنا یوزر نیم درج کریں...' : 'Enter your username...'}" class="form-control" autocomplete="off" value="" onkeydown="if(event.key==='Enter') document.getElementById('btn-admin-submit-trigger').click()">
                         </div>
                         <div class="form-group">
                             <label for="ad_pwd_field"><i class="fas fa-key"></i> ${isUrdu ? "پاس ورڈ (Password)" : "Password"}</label>
-                            <input type="password" id="ad_pwd_field" name="ad_pwd_field" required readonly onfocus="this.removeAttribute('readonly');" placeholder="••••••••" class="form-control" autocomplete="new-password" value="">
+                            <input type="text" id="ad_pwd_field" name="q_search_pwd" required placeholder="••••••••" class="form-control" autocomplete="off" value="" style="-webkit-text-security: disc; text-security: disc;" onkeydown="if(event.key==='Enter') document.getElementById('btn-admin-submit-trigger').click()">
                         </div>
-                        <button type="submit" class="btn-submit-admin-login">
+                        <button type="button" id="btn-admin-submit-trigger" onclick="handleAdminLogin(event)" class="btn-submit-admin-login">
                             <i class="fas fa-right-to-bracket"></i> ${isUrdu ? "سیکیور لاگ ان" : "Secure Admin Login"}
                         </button>
                         <div id="admin-login-err" class="admin-login-err" style="${lockoutRemaining > 0 ? 'display:block;' : 'display:none;'} margin-top:14px;">
                             ${lockoutRemaining > 0 ? (isUrdu ? `🔒 پورٹل ${lockoutRemaining} سیکنڈ کے لیے لاک ہے۔` : `🔒 Portal locked for ${lockoutRemaining}s.`) : ''}
                         </div>
-                    </form>
+                    </div>
                 </div>
             </div>
         `;
         
-        // Force clear autofill values
-        setTimeout(() => {
+        // Force clear any autofill values
+        const clearInputs = () => {
             const u = document.getElementById("ad_usr_field");
             const p = document.getElementById("ad_pwd_field");
-            if (u) u.value = "";
-            if (p) p.value = "";
-        }, 50);
-        setTimeout(() => {
-            const u = document.getElementById("ad_usr_field");
-            const p = document.getElementById("ad_pwd_field");
-            if (u) u.value = "";
-            if (p) p.value = "";
-        }, 300);
-
-        const form = document.getElementById("admin-login-form");
-        if (form) form.addEventListener("submit", handleAdminLogin);
+            if (u && document.activeElement !== u) u.value = "";
+            if (p && document.activeElement !== p) p.value = "";
+        };
+        [10, 50, 100, 300, 500, 1000].forEach(t => setTimeout(clearInputs, t));
         return;
     }
 
