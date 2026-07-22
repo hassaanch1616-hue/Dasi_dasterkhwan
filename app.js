@@ -2765,26 +2765,32 @@ function setupEventListeners() {
         renderRecipes();
     });
 
+    // Global Category Switcher
+    window.switchCategory = function(btnElement) {
+        if (!btnElement) return;
+        const cat = btnElement.dataset ? btnElement.dataset.category : btnElement.getAttribute("data-category");
+        if (!cat) return;
+
+        document.querySelectorAll(".category-tab").forEach(t => t.classList.remove("active"));
+        btnElement.classList.add("active");
+        currentCategory = cat;
+        searchQuery = "";
+
+        const searchInputEl = document.getElementById("search-input");
+        if (searchInputEl) searchInputEl.value = "";
+
+        renderRecipes();
+
+        const filterSection = document.querySelector(".filter-section");
+        if (filterSection && window.scrollY > filterSection.offsetTop + 100) {
+            filterSection.scrollIntoView({ behavior: "smooth" });
+        }
+    };
+
     // Category Tabs filtering
     document.querySelectorAll(".category-tab").forEach(tab => {
         tab.addEventListener("click", () => {
-            const cat = tab.dataset.category;
-            if (!cat) return;
-
-            document.querySelectorAll(".category-tab").forEach(t => t.classList.remove("active"));
-            tab.classList.add("active");
-            currentCategory = cat;
-            searchQuery = "";
-
-            const searchInputEl = document.getElementById("search-input");
-            if (searchInputEl) searchInputEl.value = "";
-
-            renderRecipes();
-
-            const filterSection = document.querySelector(".filter-section");
-            if (filterSection && window.scrollY > filterSection.offsetTop + 100) {
-                filterSection.scrollIntoView({ behavior: "smooth" });
-            }
+            window.switchCategory(tab);
         });
     });
 
