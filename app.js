@@ -2706,7 +2706,9 @@ function updateLanguage() {
     // Update categories tabs
     document.querySelectorAll(".category-tab").forEach(tab => {
         const cat = tab.dataset.category;
-        tab.innerText = UI_TRANSLATIONS[lang].categories[cat] || cat;
+        const iconHtml = cat === "Feedback" ? '<i class="fas fa-comment-dots" style="margin-right:6px;"></i>' : 
+                         cat === "AIAssistant" ? '<i class="fas fa-robot" style="margin-right:6px;"></i>' : '';
+        tab.innerHTML = iconHtml + (UI_TRANSLATIONS[lang].categories[cat] || cat);
     });
 
     updateModalLabels();
@@ -2766,12 +2768,19 @@ function setupEventListeners() {
     // Category Tabs filtering
     document.querySelectorAll(".category-tab").forEach(tab => {
         tab.addEventListener("click", () => {
+            const cat = tab.dataset.category;
+            if (!cat) return;
+
             document.querySelectorAll(".category-tab").forEach(t => t.classList.remove("active"));
             tab.classList.add("active");
-            currentCategory = tab.dataset.category;
+            currentCategory = cat;
+            searchQuery = "";
+
+            const searchInputEl = document.getElementById("search-input");
+            if (searchInputEl) searchInputEl.value = "";
+
             renderRecipes();
 
-            // Smooth scroll to recipe grid top if user is scrolled past filter section
             const filterSection = document.querySelector(".filter-section");
             if (filterSection && window.scrollY > filterSection.offsetTop + 100) {
                 filterSection.scrollIntoView({ behavior: "smooth" });
