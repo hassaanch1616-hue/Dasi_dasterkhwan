@@ -2916,58 +2916,6 @@ function escapeHtml(str) {
     });
 }
 
-// Admin Portal Logic & Authentication
-let ADMIN_USERNAME = "hassaan";
-let ADMIN_PASSWORD = "zunain";
-
-function isAdminLoggedIn() {
-    return sessionStorage.getItem("desi_admin_logged_in") === "true";
-}
-
-window.handleAdminLogin = function(e) {
-    e.preventDefault();
-    const userInput = document.getElementById("admin-user");
-    const passInput = document.getElementById("admin-pass");
-    if (!userInput || !passInput) return;
-    const enteredUser = userInput.value.trim();
-    const enteredPass = passInput.value.trim();
-    const isUrdu = currentLanguage === "ur";
-    
-    if (enteredUser.toLowerCase() === ADMIN_USERNAME.toLowerCase() && enteredPass === ADMIN_PASSWORD) {
-        sessionStorage.setItem("desi_admin_logged_in", "true");
-        renderRecipes();
-    } else {
-        const errEl = document.getElementById("admin-login-err");
-        if (errEl) {
-            errEl.style.display = "block";
-            errEl.innerText = isUrdu ? "غلط یوزر نیم یا پاس ورڈ!" : "Incorrect Username or Password!";
-        }
-    }
-};
-
-window.handleAdminLogout = function() {
-    sessionStorage.removeItem("desi_admin_logged_in");
-    renderRecipes();
-};
-
-window.deleteFeedbackItem = function(index) {
-    const isUrdu = currentLanguage === "ur";
-    if (confirm(isUrdu ? 'کیا آپ اس رائے کو حذف کرنا چاہتے ہیں؟' : 'Are you sure you want to delete this feedback?')) {
-        savedFeedbacks.splice(index, 1);
-        localStorage.setItem("desi_dasterkhwan_feedbacks", JSON.stringify(savedFeedbacks));
-        renderRecipes();
-    }
-};
-
-window.clearAllFeedbacks = function() {
-    const isUrdu = currentLanguage === "ur";
-    if (confirm(isUrdu ? 'کیا آپ تمام تاثرات کو حذف کرنا چاہتے ہیں؟' : 'Are you sure you want to delete ALL feedbacks?')) {
-        savedFeedbacks = [];
-        localStorage.setItem("desi_dasterkhwan_feedbacks", JSON.stringify(savedFeedbacks));
-        renderRecipes();
-    }
-};
-
 // Groq AI Assistant Logic
 let aiChatHistory = [];
 

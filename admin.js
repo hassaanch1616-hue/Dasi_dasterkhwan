@@ -239,7 +239,7 @@ function renderAdminPortal() {
                 <div class="admin-dash-header">
                     <div>
                         <h2><i class="fas fa-user-shield"></i> ${isUrdu ? "ایڈمن ڈیش بورڈ" : "Admin Dashboard"}</h2>
-                        <p>${isUrdu ? "خوش آمدید Hassaan! تمام کسٹمر فید بیکس اور پورٹل مینیج کریں" : "Welcome Hassaan! Manage customer feedbacks & settings"}</p>
+                        <p>${isUrdu ? "خوش آمدید! تمام کسٹمر فید بیکس اور پورٹل مینیج کریں" : "Welcome Admin! Manage customer feedbacks & settings"}</p>
                     </div>
                     <div style="display:flex; gap:10px;">
                         <a href="index.html" class="btn-admin-logout" style="text-decoration:none; background:var(--color-bg); color:var(--color-text-primary); border-color:var(--color-border);">
