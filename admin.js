@@ -43,8 +43,8 @@ function handleAdminLogin(e) {
         return;
     }
 
-    const userInput = document.getElementById("admin-user");
-    const passInput = document.getElementById("admin-pass");
+    const userInput = document.getElementById("ad_usr_field");
+    const passInput = document.getElementById("ad_pwd_field");
     if (!userInput || !passInput) return;
     
     const enteredUser = userInput.value.trim();
@@ -172,14 +172,18 @@ function renderAdminPortal() {
                         <p>${isUrdu ? "صرف ایڈمن کے لیے۔ لاگ ان کرنے کے لیے یوزر نیم اور پاس ورڈ درج کریں۔" : "Authorized Admin access only. Enter your credentials to login."}</p>
                     </div>
                     
-                    <form id="admin-login-form" class="admin-login-form">
+                    <form id="admin-login-form" class="admin-login-form" autocomplete="off">
+                        <!-- Dummy hidden inputs to block browser autofill -->
+                        <input type="text" name="fake_user" style="display:none;" tabindex="-1">
+                        <input type="password" name="fake_pass" style="display:none;" tabindex="-1">
+
                         <div class="form-group">
-                            <label for="admin-user"><i class="fas fa-user"></i> ${isUrdu ? "یوزر نیم (Username)" : "Username"}</label>
-                            <input type="text" id="admin-user" required placeholder="${isUrdu ? 'اپنا یوزر نیم درج کریں...' : 'Enter your username...'}" class="form-control" autocomplete="off">
+                            <label for="ad_usr_field"><i class="fas fa-user"></i> ${isUrdu ? "یوزر نیم (Username)" : "Username"}</label>
+                            <input type="text" id="ad_usr_field" name="ad_usr_field" required readonly onfocus="this.removeAttribute('readonly');" placeholder="${isUrdu ? 'اپنا یوزر نیم درج کریں...' : 'Enter your username...'}" class="form-control" autocomplete="new-password" value="">
                         </div>
                         <div class="form-group">
-                            <label for="admin-pass"><i class="fas fa-key"></i> ${isUrdu ? "پاس ورڈ (Password)" : "Password"}</label>
-                            <input type="password" id="admin-pass" required placeholder="••••••••" class="form-control" autocomplete="off">
+                            <label for="ad_pwd_field"><i class="fas fa-key"></i> ${isUrdu ? "پاس ورڈ (Password)" : "Password"}</label>
+                            <input type="password" id="ad_pwd_field" name="ad_pwd_field" required readonly onfocus="this.removeAttribute('readonly');" placeholder="••••••••" class="form-control" autocomplete="new-password" value="">
                         </div>
                         <button type="submit" class="btn-submit-admin-login">
                             <i class="fas fa-right-to-bracket"></i> ${isUrdu ? "سیکیور لاگ ان" : "Secure Admin Login"}
@@ -191,6 +195,21 @@ function renderAdminPortal() {
                 </div>
             </div>
         `;
+        
+        // Force clear autofill values
+        setTimeout(() => {
+            const u = document.getElementById("ad_usr_field");
+            const p = document.getElementById("ad_pwd_field");
+            if (u) u.value = "";
+            if (p) p.value = "";
+        }, 50);
+        setTimeout(() => {
+            const u = document.getElementById("ad_usr_field");
+            const p = document.getElementById("ad_pwd_field");
+            if (u) u.value = "";
+            if (p) p.value = "";
+        }, 300);
+
         const form = document.getElementById("admin-login-form");
         if (form) form.addEventListener("submit", handleAdminLogin);
         return;
