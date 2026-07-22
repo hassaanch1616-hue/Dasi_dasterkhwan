@@ -1992,3 +1992,82 @@ header {
     font-size: 0.85rem;
     color: var(--color-text-muted);
 }
+
+/* Our Purpose Section Card Styling */
+.purpose-card {
+    grid-column: 1 / -1;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 24px;
+    padding: 40px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+    margin-bottom: 40px;
+    width: 100%;
+}
+
+.purpose-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.purpose-icon {
+    font-size: 2.8rem;
+    color: var(--color-primary);
+}
+
+.purpose-title {
+    font-family: var(--font-heading);
+    font-size: 2.2rem;
+    color: var(--color-text-primary);
+    margin: 0;
+}
+
+.purpose-text {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: var(--color-text-secondary);
+    margin-bottom: 28px;
+}
+
+.purpose-text span {
+    color: var(--color-primary);
+    font-weight: 700;
+}
+
+.purpose-pillars {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 20px;
+}
+
+.pillar-item {
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    padding: 20px 24px;
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.pillar-icon {
+    font-size: 2.2rem;
+    color: var(--color-primary);
+}
+
+.pillar-content h5 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--color-text-primary);
+    margin: 0 0 4px 0;
+}
+
+.pillar-content p {
+    font-size: 0.9rem;
+    color: var(--color-text-muted);
+    margin: 0;
+}

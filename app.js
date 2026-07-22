@@ -3215,7 +3215,6 @@ function renderRecipes() {
             </div>
         `;
         recipeGrid.appendChild(purposeCard);
-        return;
     }
     
     const filtered = recipesList.filter(recipe => {
