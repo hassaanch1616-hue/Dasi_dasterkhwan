@@ -1,4 +1,4 @@
-// Pakistani Cooking Recipes ("Desi Dasterkhwan") Application Logic
+﻿// Pakistani Cooking Recipes ("Desi Dasterkhwan") Application Logic
 
 // Initial Pakistani Recipes Dataset
 const DEFAULT_RECIPES = [
@@ -2620,7 +2620,7 @@ function initRecipes() {
             if (!Array.isArray(recipesList) || recipesList.length === 0) {
                 recipesList = [...DEFAULT_RECIPES];
             }
-            
+
             // Self-healing migration: update image path if it has been updated in the code
             let hasUpdate = false;
             recipesList.forEach(recipe => {
@@ -2630,7 +2630,7 @@ function initRecipes() {
                     hasUpdate = true;
                 }
             });
-            
+
             if (hasUpdate) {
                 localStorage.setItem("desi_dasterkhwan_recipes_v16", JSON.stringify(recipesList));
             }
@@ -2659,7 +2659,7 @@ function initFavorites() {
 function updateLanguage() {
     const lang = currentLanguage;
     const isUrdu = lang === "ur";
-    
+
     // Toggle page direction if needed (Urdu is RTL, English is LTR)
     document.documentElement.dir = isUrdu ? "rtl" : "ltr";
     if (isUrdu) {
@@ -2667,7 +2667,7 @@ function updateLanguage() {
     } else {
         document.documentElement.classList.remove("ur-lang");
     }
-    
+
     // Update static labels
     const logoText = document.getElementById("logo-text");
     if (logoText) logoText.innerHTML = UI_TRANSLATIONS[lang].logoText;
@@ -2677,34 +2677,34 @@ function updateLanguage() {
 
     const langBtnText = document.getElementById("lang-btn-text");
     if (langBtnText) langBtnText.innerText = UI_TRANSLATIONS[lang].langBtn;
-    
+
     const addRecipeBtnText = document.getElementById("add-recipe-btn-text");
     if (addRecipeBtnText) addRecipeBtnText.innerText = UI_TRANSLATIONS[lang].addRecipe;
 
     const footerAdminText = document.getElementById("footer-admin-text");
     if (footerAdminText) footerAdminText.innerText = UI_TRANSLATIONS[lang].adminBtn;
-    
+
     const addRecipeTitleH = document.getElementById("add-recipe-title-h");
     if (addRecipeTitleH) addRecipeTitleH.innerText = isUrdu ? "نئی ریسپی شامل کریں" : "Add New Recipe";
 
     const heroSubtitle = document.querySelector(".hero-subtitle");
     if (heroSubtitle) heroSubtitle.innerText = UI_TRANSLATIONS[lang].heroSubtitle;
-    
+
     const heroTitle = document.querySelector(".hero h1");
     if (heroTitle) heroTitle.innerHTML = UI_TRANSLATIONS[lang].heroTitle;
-    
+
     const heroDesc = document.querySelector(".hero-desc");
     if (heroDesc) heroDesc.innerText = UI_TRANSLATIONS[lang].heroDesc;
-    
+
     const searchInput = document.getElementById("search-input");
     if (searchInput) searchInput.placeholder = UI_TRANSLATIONS[lang].searchPlaceholder;
-    
+
     // Update categories tabs
     document.querySelectorAll(".category-tab").forEach(tab => {
         const cat = tab.dataset.category || tab.getAttribute("data-category");
         if (cat) {
-            const iconHtml = cat === "Feedback" ? '<i class="fas fa-comment-dots" style="margin-right:6px;"></i>' : 
-                             cat === "AIAssistant" ? '<i class="fas fa-robot" style="margin-right:6px;"></i>' : '';
+            const iconHtml = cat === "Feedback" ? '<i class="fas fa-comment-dots" style="margin-right:6px;"></i>' :
+                cat === "AIAssistant" ? '<i class="fas fa-robot" style="margin-right:6px;"></i>' : '';
             tab.innerHTML = iconHtml + (UI_TRANSLATIONS[lang].categories[cat] || cat);
         }
     });
@@ -2721,19 +2721,19 @@ function updateModalLabels() {
     const lang = currentLanguage;
     const labelPrep = document.getElementById("label-prep");
     if (labelPrep) labelPrep.innerText = UI_TRANSLATIONS[lang].prepTime;
-    
+
     const labelCook = document.getElementById("label-cook");
     if (labelCook) labelCook.innerText = UI_TRANSLATIONS[lang].cookTime;
-    
+
     const labelDiff = document.getElementById("label-difficulty");
     if (labelDiff) labelDiff.innerText = UI_TRANSLATIONS[lang].difficulty;
-    
+
     const labelIng = document.getElementById("label-ingredients");
     if (labelIng) labelIng.innerText = UI_TRANSLATIONS[lang].ingredients;
-    
+
     const labelServings = document.getElementById("label-servings-text");
     if (labelServings) labelServings.innerText = UI_TRANSLATIONS[lang].servingsText;
-    
+
     const labelInst = document.getElementById("label-instructions");
     if (labelInst) labelInst.innerText = UI_TRANSLATIONS[lang].instructions;
 }
@@ -2768,7 +2768,7 @@ function setupEventListeners() {
     }
 
     // Global Category Switcher
-    window.switchCategory = function(btnElement) {
+    window.switchCategory = function (btnElement) {
         if (!btnElement) return;
         const cat = btnElement.dataset ? btnElement.dataset.category : btnElement.getAttribute("data-category");
         if (!cat) return;
@@ -2887,14 +2887,14 @@ let savedFeedbacks = JSON.parse(localStorage.getItem("desi_dasterkhwan_feedbacks
     }
 ];
 
-window.handleFeedbackSubmit = function(e) {
+window.handleFeedbackSubmit = function (e) {
     e.preventDefault();
     const name = document.getElementById("fb-name").value.trim();
     const email = document.getElementById("fb-email").value.trim();
     const ratingEl = document.querySelector('input[name="rating"]:checked');
     const rating = ratingEl ? ratingEl.value : "5";
     const comments = document.getElementById("fb-comments").value.trim();
-    
+
     if (!name || !email || !comments) return;
 
     const newFeedback = {
@@ -2923,7 +2923,7 @@ function renderFeedbacksList() {
     const container = document.getElementById("feedbacks-container");
     if (!container) return;
     container.innerHTML = "";
-    
+
     if (savedFeedbacks.length === 0) {
         container.innerHTML = `<p style="color:var(--color-text-muted);">${currentLanguage === 'ur' ? 'ابھی تک کوئی رائے موصول نہیں ہوئی۔' : 'No feedback yet. Be the first!'}</p>`;
         return;
@@ -2951,7 +2951,7 @@ function renderFeedbacksList() {
 
 function escapeHtml(str) {
     if (!str) return '';
-    return str.replace(/[&<>"']/g, function(m) {
+    return str.replace(/[&<>"']/g, function (m) {
         return {
             '&': '&amp;',
             '<': '&lt;',
@@ -2969,13 +2969,13 @@ let aiChatHistory = [];
 // GROQ API KEY: Apni Groq API Key yahan quotes ke andar paste karein:
 // Example: const DEFAULT_GROQ_API_KEY = "gsk_123456789abcdef...";
 // =========================================================================
-const DEFAULT_GROQ_API_KEY = "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"; 
+const DEFAULT_GROQ_API_KEY = "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";
 
 function getStoredGroqKey() {
     return localStorage.getItem("desi_groq_api_key") || DEFAULT_GROQ_API_KEY;
 }
 
-window.saveGroqKey = function() {
+window.saveGroqKey = function () {
     const input = document.getElementById("groq-key-input");
     if (!input) return;
     const key = input.value.trim();
@@ -2988,7 +2988,7 @@ window.saveGroqKey = function() {
     }
 };
 
-window.sendQuickPrompt = function(promptText) {
+window.sendQuickPrompt = function (promptText) {
     const chatInput = document.getElementById("ai-chat-input");
     if (chatInput) {
         chatInput.value = promptText;
@@ -2996,7 +2996,7 @@ window.sendQuickPrompt = function(promptText) {
     }
 };
 
-window.sendAIChatMessage = async function() {
+window.sendAIChatMessage = async function () {
     const chatInput = document.getElementById("ai-chat-input");
     if (!chatInput) return;
     const userMessage = chatInput.value.trim();
@@ -3016,10 +3016,10 @@ window.sendAIChatMessage = async function() {
     if (!groqKey) {
         removeTypingIndicator(typingId);
         const smartFallback = getSmartLocalChefResponse(userMessage, isUrdu);
-        const noKeyNotice = isUrdu ? 
-            "\n\n(نوٹ: لائیو Groq AI کنیکشن کے لیے اپنی Groq API Key اوپر والے باکس میں پیسٹ کر کے 'Save Key' دبائیں!)" : 
+        const noKeyNotice = isUrdu ?
+            "\n\n(نوٹ: لائیو Groq AI کنیکشن کے لیے اپنی Groq API Key اوپر والے باکس میں پیسٹ کر کے 'Save Key' دبائیں!)" :
             "\n\n(Note: For live Groq AI answers, paste your Groq API Key in the box above and click 'Save Key'!)";
-        
+
         appendChatMessage("ai", (smartFallback || (isUrdu ? "برائے مہربانی اپنی Groq API Key اوپر درج کر کے Save کریں۔ تب میں براہِ راست Groq AI سے جواب دوں گا!" : "Please enter and save your Groq API Key above to enable live Groq AI answers!")) + noKeyNotice);
         return;
     }
@@ -3058,7 +3058,7 @@ window.sendAIChatMessage = async function() {
 
         const data = await response.json();
         const aiReply = data.choices && data.choices[0] && data.choices[0].message ? data.choices[0].message.content : "No response from AI.";
-        
+
         aiChatHistory.push({ role: "assistant", content: aiReply });
         appendChatMessage("ai", aiReply);
 
@@ -3104,7 +3104,7 @@ function removeTypingIndicator(id) {
 function getSmartLocalChefResponse(query, isUrdu) {
     const q = query.toLowerCase();
     if (q.includes("biryani") || q.includes("بریانی")) {
-        return isUrdu ? 
+        return isUrdu ?
             "لذیذ بریانی کے لیے: چاول 80% ابالیں۔ گوشت کو دہی، لہسن ادرک اور بریانی مسالے میں میرینیٹ کر کے پکائیں، پھر تہہ لگا کر 15 منٹ دم دیں۔" :
             "For authentic Biryani: Boil basmati rice 80%. Marinate meat with yogurt, ginger-garlic, biryani spices & fried onions. Layer rice over gravy and steam (dum) for 15 mins!";
     }
@@ -3128,7 +3128,7 @@ function renderRecipes() {
     recipeGrid.innerHTML = "";
     const lang = currentLanguage;
     const isUrdu = lang === "ur";
-    
+
     if (currentCategory === "AIAssistant") {
         const storedKey = getStoredGroqKey();
         const aiCard = document.createElement("div");
@@ -3159,9 +3159,9 @@ function renderRecipes() {
                     <div class="chat-bubble ai-bubble">
                         <div class="bubble-sender">👨‍🍳 Desi Chef AI</div>
                         <div class="bubble-content">
-                            ${isUrdu ? 
-                                "السلام علیکم! میں آپ کا دیسی چیف اے آئی اسسٹنٹ ہوں۔ آپ مجھ سے کھانا پکانے، ریسپیز، یا کسی بھی چیز کا متبادل لائیو پوچھ سکتے ہیں!" : 
-                                "Hello! I am your Desi Chef AI Assistant. Ask me anything live about cooking, recipes, or ingredient substitutes!"}
+                            ${isUrdu ?
+                "السلام علیکم! میں آپ کا دیسی چیف اے آئی اسسٹنٹ ہوں۔ آپ مجھ سے کھانا پکانے، ریسپیز، یا کسی بھی چیز کا متبادل لائیو پوچھ سکتے ہیں!" :
+                "Hello! I am your Desi Chef AI Assistant. Ask me anything live about cooking, recipes, or ingredient substitutes!"}
                         </div>
                     </div>
                 </div>
@@ -3231,12 +3231,12 @@ function renderRecipes() {
         renderFeedbacksList();
         return;
     }
-    
+
     if (currentCategory === "All" && searchQuery === "") {
         const purposeCard = document.createElement("div");
         purposeCard.className = "purpose-card";
         const titleText = isUrdu ? "ہمارا مقصد (Our Purpose)" : "Hamara Maqsad | Our Purpose";
-        const descText = isUrdu ? 
+        const descText = isUrdu ?
             "دیسی دسترخوان کا مقصد روایتی پاکستانی پکوانوں کے ورثے کو زندہ رکھنا اور آپ کے باورچی خانے کو جدید ڈیجیٹل فیچرز فراہم کرنا ہے۔ ہم چاہتے ہیں کہ ہر شخص بہترین دیسی کھانے ہمارے <span>ڈائنامک سرونگ کیلکولیٹر</span> اور <span>لائیو کوکنگ ٹائمرز</span> کی مدد سے آسانی کے ساتھ پکا سکے۔" :
             "Desi Dasterkhwan ka maqsad traditional Pakistani recipe heritage ko zinda rakhna aur aapke kitchen ko digital features ke sath modern banana hai. Hum chahte hain ke har koi lazeez aur behtareen khane aasaani se cook kar sake, hamare <span>dynamic servings calculator</span> aur <span>step-by-step cooking timers</span> ke sath.";
 
@@ -3269,21 +3269,21 @@ function renderRecipes() {
         `;
         recipeGrid.appendChild(purposeCard);
     }
-    
+
     const filtered = recipesList.filter(recipe => {
         const matchesCategory = currentCategory === "All" || recipe.category.toLowerCase() === currentCategory.toLowerCase();
-        
+
         const trans = RECIPE_TRANSLATIONS[recipe.id];
         const titleUr = trans ? trans.title : "";
         const descUr = trans ? trans.description : "";
 
         const matchesSearch = recipe.title.toLowerCase().includes(searchQuery) ||
-                              titleUr.toLowerCase().includes(searchQuery) ||
-                              recipe.description.toLowerCase().includes(searchQuery) ||
-                              descUr.toLowerCase().includes(searchQuery) ||
-                              recipe.category.toLowerCase().includes(searchQuery) ||
-                              recipe.instructions.some(inst => inst.toLowerCase().includes(searchQuery));
-                              
+            titleUr.toLowerCase().includes(searchQuery) ||
+            recipe.description.toLowerCase().includes(searchQuery) ||
+            descUr.toLowerCase().includes(searchQuery) ||
+            recipe.category.toLowerCase().includes(searchQuery) ||
+            recipe.instructions.some(inst => inst.toLowerCase().includes(searchQuery));
+
         return matchesCategory && matchesSearch;
     });
 
@@ -3301,9 +3301,9 @@ function renderRecipes() {
         const card = document.createElement("div");
         card.className = "recipe-card";
         card.setAttribute("id", recipe.id);
-        
+
         const isFavorite = favoriteRecipes.includes(recipe.id);
-        
+
         const translated = isUrdu && RECIPE_TRANSLATIONS[recipe.id] ? RECIPE_TRANSLATIONS[recipe.id] : recipe;
         const displayTitle = translated.title || recipe.title;
         const displayDesc = translated.description || recipe.description;
@@ -3327,17 +3327,17 @@ function renderRecipes() {
                 </div>
             </div>
         `;
-        
+
         card.addEventListener("click", () => {
             openRecipeDetails(recipe);
         });
-        
+
         recipeGrid.appendChild(card);
     });
 }
 
 // Toggle Favorite Status
-window.toggleFavorite = function(recipeId) {
+window.toggleFavorite = function (recipeId) {
     const idx = favoriteRecipes.indexOf(recipeId);
     if (idx > -1) {
         favoriteRecipes.splice(idx, 1);
@@ -3345,7 +3345,7 @@ window.toggleFavorite = function(recipeId) {
         favoriteRecipes.push(recipeId);
     }
     localStorage.setItem("recipe_favorites", JSON.stringify(favoriteRecipes));
-    
+
     // Update active state in grid cards
     const card = document.getElementById(recipeId);
     if (card) {
@@ -3360,7 +3360,7 @@ window.toggleFavorite = function(recipeId) {
             }
         }
     }
-    
+
     // If the modal is currently open and displays this recipe, update it
     if (selectedRecipe && selectedRecipe.id === recipeId) {
         const modalFavBtn = document.getElementById("modal-favorite-btn");
@@ -3377,7 +3377,7 @@ window.toggleFavorite = function(recipeId) {
 };
 
 // Close Recipe Detail Modal (Global)
-window.closeModal = function() {
+window.closeModal = function () {
     const recipeModal = getRecipeModal();
     if (recipeModal) {
         recipeModal.classList.remove("show");
@@ -3397,13 +3397,13 @@ function openRecipeDetails(recipe) {
     let difficulty = recipe.difficulty || "Medium";
     let servings = recipe.servings || 4;
     let tempServings = servings;
-    
+
     const isFavorite = favoriteRecipes.includes(recipe.id);
     const lang = currentLanguage;
     const isUrdu = lang === "ur";
-    
+
     const translatedRecipe = isUrdu && RECIPE_TRANSLATIONS[recipe.id] ? RECIPE_TRANSLATIONS[recipe.id] : recipe;
-    
+
     // Populate Modal Info
     const titleEl = document.getElementById("modal-recipe-title");
     if (titleEl) titleEl.innerText = translatedRecipe.title || recipe.title || "Pakistani Dish";
@@ -3416,12 +3416,12 @@ function openRecipeDetails(recipe) {
         const bgImg = recipe.image || 'karahi_1784531967565.png';
         imgEl.style.backgroundImage = `linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.6)), url('${bgImg}'), url('karahi_1784531967565.png')`;
     }
-    
+
     const displayPrep = isUrdu ? `${prepTime} منٹ` : `${prepTime} Mins`;
     const displayCook = isUrdu ? `${cookTime} منٹ` : `${cookTime} Mins`;
     const diffLower = difficulty.toLowerCase();
     const displayDiff = isUrdu ? (UI_TRANSLATIONS[lang][diffLower] || difficulty) : difficulty;
-    
+
     const prepEl = document.getElementById("modal-recipe-prep");
     if (prepEl) prepEl.innerText = displayPrep;
 
@@ -3433,15 +3433,15 @@ function openRecipeDetails(recipe) {
         diffEl.className = `difficulty-tag ${diffLower}`;
         diffEl.innerText = displayDiff;
     }
-    
+
     // Favorite Button setup in Modal
     const modalFavBtn = document.getElementById("modal-favorite-btn");
     if (modalFavBtn) {
         modalFavBtn.className = `modal-action-btn ${isFavorite ? 'active' : ''}`;
-        modalFavBtn.innerHTML = isFavorite ? 
-            (isUrdu ? `<i class="fas fa-bookmark"></i> محفوظ شدہ` : `<i class="fas fa-bookmark"></i> Saved`) : 
+        modalFavBtn.innerHTML = isFavorite ?
+            (isUrdu ? `<i class="fas fa-bookmark"></i> محفوظ شدہ` : `<i class="fas fa-bookmark"></i> Saved`) :
             (isUrdu ? `<i class="far fa-bookmark"></i> محفوظ کریں` : `<i class="far fa-bookmark"></i> Save Recipe`);
-        
+
         modalFavBtn.onclick = () => {
             toggleFavorite(recipe.id);
         };
@@ -3452,14 +3452,14 @@ function openRecipeDetails(recipe) {
     // Render Servings and Ingredients
     const servingsCountEl = document.getElementById("servings-count");
     if (servingsCountEl) servingsCountEl.innerText = tempServings;
-    
+
     renderIngredients(recipe, tempServings);
     renderInstructions(recipe);
-    
+
     // Setup Servings adjustments (+ / -)
     const decBtn = document.getElementById("servings-dec");
     const incBtn = document.getElementById("servings-inc");
-    
+
     if (decBtn) {
         decBtn.onclick = () => {
             if (tempServings > 1) {
@@ -3469,7 +3469,7 @@ function openRecipeDetails(recipe) {
             }
         };
     }
-    
+
     if (incBtn) {
         incBtn.onclick = () => {
             tempServings++;
@@ -3477,7 +3477,7 @@ function openRecipeDetails(recipe) {
             renderIngredients(recipe, tempServings);
         };
     }
-    
+
     // Show Modal
     recipeModal.style.display = "flex";
     recipeModal.classList.add("show");
@@ -3489,18 +3489,18 @@ function renderIngredients(recipe, targetServings) {
     const listEl = document.getElementById("modal-ingredients-list");
     if (!listEl || !recipe || !recipe.ingredients) return;
     listEl.innerHTML = "";
-    
+
     const baseServings = recipe.servings || 4;
     const factor = (targetServings || 4) / baseServings;
     const lang = currentLanguage;
     const isUrdu = lang === "ur";
-    
+
     const translatedRecipe = isUrdu && RECIPE_TRANSLATIONS[recipe.id] ? RECIPE_TRANSLATIONS[recipe.id] : null;
-    
+
     recipe.ingredients.forEach((ing, index) => {
         const item = document.createElement("div");
         item.className = "ingredient-item";
-        
+
         let ingName = typeof ing === 'string' ? ing : (ing ? (ing.name || "") : "");
         let ingAmount = typeof ing === 'object' && ing ? ing.amount : 0;
         let ingUnit = typeof ing === 'object' && ing ? ing.unit : "";
@@ -3510,14 +3510,14 @@ function renderIngredients(recipe, targetServings) {
             const calculated = ingAmount * factor;
             displayAmount = Number(calculated.toFixed(2)).toString();
         }
-        
+
         let displayUnit = ingUnit || "";
         if (isUrdu && ingUnit) {
             displayUnit = UNIT_TRANSLATIONS[ingUnit.toLowerCase()] || ingUnit;
         }
         const unitStr = displayUnit ? ` ${displayUnit}` : "";
         const completeQuantityStr = displayAmount ? `${displayAmount}${unitStr}` : "";
-        
+
         let displayIngName = ingName;
         if (isUrdu) {
             if (translatedRecipe && translatedRecipe.ingredients && translatedRecipe.ingredients[index]) {
@@ -3536,7 +3536,7 @@ function renderIngredients(recipe, targetServings) {
                 }
             }
         }
-        
+
         item.innerHTML = `
             <label class="checkbox-container">
                 <input type="checkbox" id="ing-check-${index}">
@@ -3556,19 +3556,19 @@ function renderInstructions(recipe) {
     listEl.innerHTML = "";
     const lang = currentLanguage;
     const isUrdu = lang === "ur";
-    
+
     const translatedRecipe = isUrdu && RECIPE_TRANSLATIONS[recipe.id] ? RECIPE_TRANSLATIONS[recipe.id] : null;
     const instructionsToUse = (translatedRecipe && translatedRecipe.instructions && translatedRecipe.instructions.length > 0)
-        ? translatedRecipe.instructions 
+        ? translatedRecipe.instructions
         : recipe.instructions;
-    
+
     instructionsToUse.forEach((step, index) => {
         const item = document.createElement("div");
         item.className = "step-item";
-        
+
         const originalStep = (recipe.instructions && recipe.instructions[index]) ? recipe.instructions[index] : step;
         const timerBtnHtml = extractTimerButton(originalStep, index);
-        
+
         item.innerHTML = `
             <div class="step-num-container">
                 <span class="step-number">${index + 1}</span>
@@ -3588,10 +3588,10 @@ function extractTimerButton(stepText, stepIndex) {
 
     const minRegex = /(\d+)\s*(?:-|to)?\s*(\d+)?\s*(?:minutes|mins|minute|min)/i;
     const hourRegex = /(\d+)\s*(?:-|to)?\s*(\d+)?\s*(?:hours|hour|hr)/i;
-    
+
     let minutes = 0;
     let label = "";
-    
+
     const minMatch = stepText.match(minRegex);
     if (minMatch) {
         const val = minMatch[2] ? parseInt(minMatch[2]) : parseInt(minMatch[1]);
@@ -3605,7 +3605,7 @@ function extractTimerButton(stepText, stepIndex) {
             label = `${val} ${val > 1 ? 'Hours' : 'Hour'}`;
         }
     }
-    
+
     if (minutes > 0) {
         let displayLabel = label;
         if (currentLanguage === "ur") {
@@ -3626,40 +3626,40 @@ function extractTimerButton(stepText, stepIndex) {
 }
 
 // Custom Cooking Timer Countdown
-window.startRecipeTimer = function(minutes, stepIndex) {
+window.startRecipeTimer = function (minutes, stepIndex) {
     if (timerInterval) {
         clearInterval(timerInterval);
     }
-    
+
     const timerDisplay = document.getElementById("active-timer-widget");
     const timerLabel = document.getElementById("active-timer-label");
     const timerClock = document.getElementById("active-timer-clock");
-    
+
     timerDisplay.classList.add("active");
     if (currentLanguage === "ur") {
         timerLabel.innerText = `مرحلہ ${stepIndex + 1} ٹائمر`;
     } else {
         timerLabel.innerText = `Step ${stepIndex + 1} Timer`;
     }
-    
+
     let secondsLeft = minutes * 60;
-    
+
     function updateClock() {
         const h = Math.floor(secondsLeft / 3600);
         const m = Math.floor((secondsLeft % 3600) / 60);
         const s = secondsLeft % 60;
-        
+
         let displayStr = "";
         if (h > 0) {
             displayStr += `${h.toString().padStart(2, '0')}:`;
         }
         displayStr += `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-        
+
         timerClock.innerText = displayStr;
     }
-    
+
     updateClock();
-    
+
     timerInterval = setInterval(() => {
         secondsLeft--;
         if (secondsLeft <= 0) {
@@ -3677,7 +3677,7 @@ window.startRecipeTimer = function(minutes, stepIndex) {
             updateClock();
         }
     }, 1000);
-    
+
     const cancelTimerBtn = document.getElementById("active-timer-cancel");
     cancelTimerBtn.onclick = () => {
         clearInterval(timerInterval);
@@ -3698,24 +3698,24 @@ function initAudio() {
 // Play beeping sound using synthesiser when cooking timer completes
 function playTimerSound() {
     if (!timerAudio) return;
-    
+
     try {
         // Play 3 pulses
         let start = timerAudio.currentTime;
         for (let i = 0; i < 3; i++) {
             let osc = timerAudio.createOscillator();
             let gain = timerAudio.createGain();
-            
+
             osc.type = "sine";
             osc.frequency.setValueAtTime(880, start + (i * 0.5)); // Note A5
-            
+
             gain.gain.setValueAtTime(0, start + (i * 0.5));
             gain.gain.linearRampToValueAtTime(0.5, start + (i * 0.5) + 0.05);
             gain.gain.exponentialRampToValueAtTime(0.001, start + (i * 0.5) + 0.4);
-            
+
             osc.connect(gain);
             gain.connect(timerAudio.destination);
-            
+
             osc.start(start + (i * 0.5));
             osc.stop(start + (i * 0.5) + 0.4);
         }
@@ -3787,7 +3787,7 @@ function saveNewRecipe() {
     const cookTime = parseInt(document.getElementById("recipe-cook-time").value) || 0;
     const servings = parseInt(document.getElementById("recipe-servings-val").value) || 4;
     const description = document.getElementById("recipe-desc").value;
-    
+
     // Extract Ingredients
     const ingRows = document.querySelectorAll(".form-ingredient-row");
     const ingredients = [];
@@ -3829,7 +3829,7 @@ function saveNewRecipe() {
 
     recipesList.unshift(newRecipe); // Add to beginning of grid
     localStorage.setItem("desi_dasterkhwan_recipes_v16", JSON.stringify(recipesList));
-    
+
     renderRecipes();
     closeAddRecipeModalBtn.click();
 }
