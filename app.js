@@ -3471,9 +3471,11 @@ function openRecipeDetails(recipe) {
 // Render dynamic ingredients table based on target servings multiplier
 function renderIngredients(recipe, targetServings) {
     const listEl = document.getElementById("modal-ingredients-list");
+    if (!listEl || !recipe || !recipe.ingredients) return;
     listEl.innerHTML = "";
     
-    const factor = targetServings / recipe.servings;
+    const baseServings = recipe.servings || 4;
+    const factor = (targetServings || 4) / baseServings;
     const lang = currentLanguage;
     const isUrdu = lang === "ur";
     
@@ -3483,28 +3485,32 @@ function renderIngredients(recipe, targetServings) {
         const item = document.createElement("div");
         item.className = "ingredient-item";
         
+        let ingName = typeof ing === 'string' ? ing : (ing ? (ing.name || "") : "");
+        let ingAmount = typeof ing === 'object' && ing ? ing.amount : 0;
+        let ingUnit = typeof ing === 'object' && ing ? ing.unit : "";
+
         let displayAmount = "";
-        if (ing.amount && ing.amount > 0) {
-            const calculated = ing.amount * factor;
+        if (ingAmount && ingAmount > 0) {
+            const calculated = ingAmount * factor;
             displayAmount = Number(calculated.toFixed(2)).toString();
         }
         
-        let displayUnit = ing.unit || "";
-        if (isUrdu && ing.unit) {
-            displayUnit = UNIT_TRANSLATIONS[ing.unit.toLowerCase()] || ing.unit;
+        let displayUnit = ingUnit || "";
+        if (isUrdu && ingUnit) {
+            displayUnit = UNIT_TRANSLATIONS[ingUnit.toLowerCase()] || ingUnit;
         }
         const unitStr = displayUnit ? ` ${displayUnit}` : "";
         const completeQuantityStr = displayAmount ? `${displayAmount}${unitStr}` : "";
         
-        let displayIngName = ing.name;
+        let displayIngName = ingName;
         if (isUrdu) {
             if (translatedRecipe && translatedRecipe.ingredients && translatedRecipe.ingredients[index]) {
                 const transIng = translatedRecipe.ingredients[index];
-                displayIngName = typeof transIng === 'string' ? transIng : (transIng.name || ing.name);
-            } else {
-                const lowerName = ing.name.toLowerCase();
-                displayIngName = INGREDIENT_TRANSLATIONS[lowerName] || ing.name;
-                if (displayIngName === ing.name) {
+                displayIngName = typeof transIng === 'string' ? transIng : (transIng ? (transIng.name || ingName) : ingName);
+            } else if (ingName) {
+                const lowerName = ingName.toLowerCase();
+                displayIngName = INGREDIENT_TRANSLATIONS[lowerName] || ingName;
+                if (displayIngName === ingName) {
                     for (const key in INGREDIENT_TRANSLATIONS) {
                         if (lowerName.includes(key)) {
                             displayIngName = INGREDIENT_TRANSLATIONS[key];
@@ -3519,9 +3525,9 @@ function renderIngredients(recipe, targetServings) {
             <label class="checkbox-container">
                 <input type="checkbox" id="ing-check-${index}">
                 <span class="checkmark"></span>
-                <span class="ingredient-name">${displayIngName}</span>
+                <span class="ingredient-name">${escapeHtml(displayIngName)}</span>
             </label>
-            <span class="ingredient-amount">${completeQuantityStr}</span>
+            <span class="ingredient-amount">${escapeHtml(completeQuantityStr)}</span>
         `;
         listEl.appendChild(item);
     });
@@ -3530,6 +3536,7 @@ function renderIngredients(recipe, targetServings) {
 // Render step by step instructions with embedded checklist and local smart timers
 function renderInstructions(recipe) {
     const listEl = document.getElementById("modal-instructions-list");
+    if (!listEl || !recipe || !recipe.instructions) return;
     listEl.innerHTML = "";
     const lang = currentLanguage;
     const isUrdu = lang === "ur";
@@ -3543,7 +3550,7 @@ function renderInstructions(recipe) {
         const item = document.createElement("div");
         item.className = "step-item";
         
-        const originalStep = recipe.instructions[index] || step;
+        const originalStep = (recipe.instructions && recipe.instructions[index]) ? recipe.instructions[index] : step;
         const timerBtnHtml = extractTimerButton(originalStep, index);
         
         item.innerHTML = `
@@ -3551,7 +3558,7 @@ function renderInstructions(recipe) {
                 <span class="step-number">${index + 1}</span>
             </div>
             <div class="step-body">
-                <p class="step-text" id="step-text-${index}">${step}</p>
+                <p class="step-text" id="step-text-${index}">${escapeHtml(step)}</p>
                 ${timerBtnHtml}
             </div>
         `;
@@ -3561,6 +3568,8 @@ function renderInstructions(recipe) {
 
 // Extract timer markers from instructions
 function extractTimerButton(stepText, stepIndex) {
+    if (!stepText || typeof stepText !== 'string') return "";
+
     const minRegex = /(\d+)\s*(?:-|to)?\s*(\d+)?\s*(?:minutes|mins|minute|min)/i;
     const hourRegex = /(\d+)\s*(?:-|to)?\s*(\d+)?\s*(?:hours|hour|hr)/i;
     
