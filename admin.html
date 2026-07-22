@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Desi Dasterkhwan - Admin Portal</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&family=Noto+Nastaliq+Urdu:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <!-- Header Section -->
+    <header class="header">
+        <div class="container header-container">
+            <div class="logo">
+                <i class="fas fa-utensils logo-icon"></i>
+                <div class="logo-text" id="logo-text">Desi <span>Dasterkhwan</span> <small style="font-size:0.5em; opacity:0.8; color:var(--color-primary);">Admin</small></div>
+            </div>
+            <div class="header-actions">
+                <a href="index.html" class="btn-lang-toggle" style="text-decoration:none;">
+                    <i class="fas fa-arrow-left"></i>
+                    <span id="back-home-text">Main Website</span>
+                </a>
+                <button class="btn-lang-toggle" id="lang-toggle-btn" aria-label="Language Toggle">
+                    <i class="fas fa-globe"></i>
+                    <span id="lang-btn-text">اردو</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="recipe-section" style="min-height: 70vh; padding-top: 40px;">
+        <div class="container">
+            <div id="admin-app">
+                <!-- Injected via admin.js -->
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container footer-container">
+            <div class="footer-brand">
+                <div class="logo-text">Desi <span>Dasterkhwan</span></div>
+                <p class="footer-tagline">Admin Management Portal</p>
+            </div>
+            <div class="footer-links">
+                <a href="index.html" class="footer-admin-link">
+                    <i class="fas fa-home"></i> Back to Main Website
+                </a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div class="container">
+                <p>&copy; 2026 Desi Dasterkhwan Admin Portal. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Admin JS Script -->
+    <script src="admin.js"></script>
+</body>
+</html>
