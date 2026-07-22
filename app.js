@@ -2589,16 +2589,10 @@ const RECIPE_TRANSLATIONS = {
         ]
     }
 };
-// DOM Element Selectors
-const recipeGrid = document.getElementById("recipe-grid");
-const searchInput = document.getElementById("search-input");
-const categoryTabs = document.querySelectorAll(".category-tab");
-const recipeModal = document.getElementById("recipe-modal");
-const addRecipeModal = document.getElementById("add-recipe-modal");
-const showAddRecipeBtn = document.getElementById("show-add-recipe-btn");
-const closeRecipeModalBtn = document.getElementById("close-recipe-modal");
-const closeAddRecipeModalBtn = document.getElementById("close-add-recipe-modal");
-const addRecipeForm = document.getElementById("add-recipe-form");
+// DOM Element Helpers
+function getRecipeGrid() { return document.getElementById("recipe-grid"); }
+function getRecipeModal() { return document.getElementById("recipe-modal"); }
+function getAddRecipeModal() { return document.getElementById("add-recipe-modal"); }
 
 // Initialize Application
 document.addEventListener("DOMContentLoaded", () => {
@@ -2707,15 +2701,18 @@ function updateLanguage() {
     
     // Update categories tabs
     document.querySelectorAll(".category-tab").forEach(tab => {
-        const cat = tab.dataset.category;
-        const iconHtml = cat === "Feedback" ? '<i class="fas fa-comment-dots" style="margin-right:6px;"></i>' : 
-                         cat === "AIAssistant" ? '<i class="fas fa-robot" style="margin-right:6px;"></i>' : '';
-        tab.innerHTML = iconHtml + (UI_TRANSLATIONS[lang].categories[cat] || cat);
+        const cat = tab.dataset.category || tab.getAttribute("data-category");
+        if (cat) {
+            const iconHtml = cat === "Feedback" ? '<i class="fas fa-comment-dots" style="margin-right:6px;"></i>' : 
+                             cat === "AIAssistant" ? '<i class="fas fa-robot" style="margin-right:6px;"></i>' : '';
+            tab.innerHTML = iconHtml + (UI_TRANSLATIONS[lang].categories[cat] || cat);
+        }
     });
 
     updateModalLabels();
 
-    if (selectedRecipe && recipeModal.classList.contains("show")) {
+    const recipeModal = getRecipeModal();
+    if (selectedRecipe && recipeModal && recipeModal.classList.contains("show")) {
         openRecipeDetails(selectedRecipe);
     }
 }
@@ -2762,10 +2759,13 @@ function setupEventListeners() {
     });
 
     // Search functionality
-    searchInput.addEventListener("input", (e) => {
-        searchQuery = e.target.value.toLowerCase();
-        renderRecipes();
-    });
+    const searchInput = document.getElementById("search-input");
+    if (searchInput) {
+        searchInput.addEventListener("input", (e) => {
+            searchQuery = e.target.value.toLowerCase();
+            renderRecipes();
+        });
+    }
 
     // Global Category Switcher
     window.switchCategory = function(btnElement) {
@@ -2791,38 +2791,58 @@ function setupEventListeners() {
 
     // Category Tabs filtering
     document.querySelectorAll(".category-tab").forEach(tab => {
-        tab.addEventListener("click", () => {
+        tab.addEventListener("click", (e) => {
+            e.preventDefault();
             window.switchCategory(tab);
         });
     });
 
     // Modal Closing
-    closeRecipeModalBtn.addEventListener("click", () => {
-        closeModal();
-    });
+    const closeRecipeModalBtn = document.getElementById("close-recipe-modal");
+    if (closeRecipeModalBtn) {
+        closeRecipeModalBtn.addEventListener("click", () => {
+            closeModal();
+        });
+    }
 
     window.addEventListener("click", (e) => {
-        if (e.target === recipeModal) {
+        const recipeModal = getRecipeModal();
+        const addRecipeModal = getAddRecipeModal();
+        if (recipeModal && e.target === recipeModal) {
             closeModal();
         }
-        if (e.target === addRecipeModal) {
-            closeAddRecipeModalBtn.click();
+        if (addRecipeModal && e.target === addRecipeModal) {
+            const closeAddBtn = document.getElementById("close-add-recipe-modal");
+            if (closeAddBtn) closeAddBtn.click();
         }
     });
 
     // Show Add Recipe Form Modal
-    showAddRecipeBtn.addEventListener("click", () => {
-        addRecipeModal.classList.add("show");
-        document.body.style.overflow = "hidden";
-    });
+    const showAddRecipeBtn = document.getElementById("show-add-recipe-btn");
+    if (showAddRecipeBtn) {
+        showAddRecipeBtn.addEventListener("click", () => {
+            const addRecipeModal = getAddRecipeModal();
+            if (addRecipeModal) {
+                addRecipeModal.classList.add("show");
+                document.body.style.overflow = "hidden";
+            }
+        });
+    }
 
     // Close Add Recipe Form Modal
-    closeAddRecipeModalBtn.addEventListener("click", () => {
-        addRecipeModal.classList.remove("show");
-        document.body.style.overflow = "auto";
-        addRecipeForm.reset();
-        clearFormDynamicIngredients();
-    });
+    const closeAddRecipeModalBtn = document.getElementById("close-add-recipe-modal");
+    if (closeAddRecipeModalBtn) {
+        closeAddRecipeModalBtn.addEventListener("click", () => {
+            const addRecipeModal = getAddRecipeModal();
+            if (addRecipeModal) {
+                addRecipeModal.classList.remove("show");
+                document.body.style.overflow = "auto";
+                const addRecipeForm = document.getElementById("add-recipe-form");
+                if (addRecipeForm) addRecipeForm.reset();
+                clearFormDynamicIngredients();
+            }
+        });
+    }
 
     // Dynamic Ingredient Add in Form
     const addFormIngredientBtn = document.getElementById("form-add-ingredient");
@@ -3097,6 +3117,8 @@ function getSmartLocalChefResponse(query, isUrdu) {
 
 // Render Recipe Grid based on category and search criteria
 function renderRecipes() {
+    const recipeGrid = getRecipeGrid();
+    if (!recipeGrid) return;
     recipeGrid.innerHTML = "";
     const lang = currentLanguage;
     const isUrdu = lang === "ur";
