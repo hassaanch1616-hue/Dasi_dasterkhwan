@@ -1488,7 +1488,7 @@ const UI_TRANSLATIONS = {
         medium: "Medium",
         hard: "Hard",
         categories: {
-            "All": "Our Purpose",
+            "All": "All Recipes",
             "Breakfast": "Breakfast",
             "Lunch": "Lunch",
             "BBQ": "BBQ",
@@ -1525,7 +1525,7 @@ const UI_TRANSLATIONS = {
         medium: "درمیانہ",
         hard: "مشکل",
         categories: {
-            "All": "ہمارا مقصد",
+            "All": "تمام ریسپیز",
             "Breakfast": "ناشتہ",
             "Lunch": "دوپہر کا کھانا",
             "BBQ": "باربی کیو",
@@ -3200,44 +3200,6 @@ function renderRecipes() {
         recipeGrid.appendChild(feedbackCard);
         renderFeedbacksList();
         return;
-    }
-    
-    if (currentCategory === "All" && searchQuery === "") {
-        const purposeCard = document.createElement("div");
-        purposeCard.className = "purpose-card";
-        const titleText = isUrdu ? "ہمارا مقصد (Our Purpose)" : "Hamara Maqsad | Our Purpose";
-        const descText = isUrdu ? 
-            "دیسی دسترخوان کا مقصد روایتی پاکستانی پکوانوں کے ورثے کو زندہ رکھنا اور آپ کے باورچی خانے کو جدید ڈیجیٹل فیچرز فراہم کرنا ہے۔ ہم چاہتے ہیں کہ ہر شخص بہترین دیسی کھانے ہمارے <span>ڈائنامک سرونگ کیلکولیٹر</span> اور <span>لائیو کوکنگ ٹائمرز</span> کی مدد سے آسانی کے ساتھ پکا سکے۔" :
-            "Desi Dasterkhwan ka maqsad traditional Pakistani recipe heritage ko zinda rakhna aur aapke kitchen ko digital features ke sath modern banana hai. Hum chahte hain ke har koi lazeez aur behtareen khane aasaani se cook kar sake, hamare <span>dynamic servings calculator</span> aur <span>step-by-step cooking timers</span> ke sath.";
-
-        purposeCard.innerHTML = `
-            <div class="purpose-header">
-                <i class="fas fa-fire-burner purpose-icon"></i>
-                <h2 class="purpose-title">${titleText}</h2>
-            </div>
-            <div class="purpose-body">
-                <p class="purpose-text">
-                    ${descText}
-                </p>
-                <div class="purpose-pillars">
-                    <div class="pillar-item">
-                        <i class="fas fa-heart-circle-check pillar-icon"></i>
-                        <div class="pillar-content">
-                            <h5>${isUrdu ? "روایتی پاکستانی پکوان" : "Heritage Recipes"}</h5>
-                            <p>${isUrdu ? "اصیل اور لذیذ پاکستانی ذائقے۔" : "Authentic Pakistani recipes."}</p>
-                        </div>
-                    </div>
-                    <div class="pillar-item">
-                        <i class="fas fa-stopwatch-20 pillar-icon"></i>
-                        <div class="pillar-content">
-                            <h5>${isUrdu ? "جدید کوکنگ ٹولز" : "Smart Tools"}</h5>
-                            <p>${isUrdu ? "سرونگز اور لائیو کوکنگ ٹائمرز۔" : "Servings & live step timers."}</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `;
-        recipeGrid.appendChild(purposeCard);
     }
     
     const filtered = recipesList.filter(recipe => {
