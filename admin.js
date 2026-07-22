@@ -294,11 +294,11 @@ function renderAdminPortal() {
                     <form id="update-creds-form" style="display:flex; flex-wrap:wrap; gap:16px; align-items:flex-end;">
                         <div class="form-group" style="flex:1; min-width:200px; margin:0;">
                             <label for="new-admin-user">${isUrdu ? "نیا یوزر نیم" : "New Username"}</label>
-                            <input type="text" id="new-admin-user" required value="${escapeHtml(currentCreds.username)}" class="form-control">
+                            <input type="text" id="new-admin-user" required placeholder="${isUrdu ? 'نیا یوزر نیم لکھیں...' : 'Enter new username...'}" class="form-control">
                         </div>
                         <div class="form-group" style="flex:1; min-width:200px; margin:0;">
                             <label for="new-admin-pass">${isUrdu ? "نیا پاس ورڈ" : "New Password"}</label>
-                            <input type="text" id="new-admin-pass" required value="${escapeHtml(currentCreds.password)}" class="form-control">
+                            <input type="password" id="new-admin-pass" required placeholder="••••••••" class="form-control">
                         </div>
                         <button type="submit" class="btn-primary" style="padding:12px 24px;">
                             <i class="fas fa-save"></i> ${isUrdu ? "محفوظ کریں" : "Save Credentials"}
