@@ -3370,8 +3370,20 @@ window.toggleFavorite = function(recipeId) {
     }
 };
 
+// Close Recipe Detail Modal
+function closeModal() {
+    const recipeModal = getRecipeModal();
+    if (recipeModal) {
+        recipeModal.classList.remove("show");
+        document.body.style.overflow = "auto";
+    }
+}
+
 // Open Recipe Detail Modal
 function openRecipeDetails(recipe) {
+    const recipeModal = getRecipeModal();
+    if (!recipeModal || !recipe) return;
+
     selectedRecipe = recipe;
     let tempServings = recipe.servings;
     
@@ -3382,35 +3394,49 @@ function openRecipeDetails(recipe) {
     const translatedRecipe = isUrdu && RECIPE_TRANSLATIONS[recipe.id] ? RECIPE_TRANSLATIONS[recipe.id] : recipe;
     
     // Populate Modal Info
-    document.getElementById("modal-recipe-title").innerText = translatedRecipe.title || recipe.title;
-    document.getElementById("modal-recipe-desc").innerText = translatedRecipe.description || recipe.description;
-    document.getElementById("modal-recipe-image").style.backgroundImage = `linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.6)), url('${recipe.image}'), url('karahi_1784531967565.png')`;
+    const titleEl = document.getElementById("modal-recipe-title");
+    if (titleEl) titleEl.innerText = translatedRecipe.title || recipe.title;
+
+    const descEl = document.getElementById("modal-recipe-desc");
+    if (descEl) descEl.innerText = translatedRecipe.description || recipe.description;
+
+    const imgEl = document.getElementById("modal-recipe-image");
+    if (imgEl) imgEl.style.backgroundImage = `linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.6)), url('${recipe.image}'), url('karahi_1784531967565.png')`;
     
     const displayPrep = isUrdu ? `${recipe.prepTime} منٹ` : `${recipe.prepTime} Mins`;
     const displayCook = isUrdu ? `${recipe.cookTime} منٹ` : `${recipe.cookTime} Mins`;
     const displayDiff = isUrdu ? (UI_TRANSLATIONS[lang][recipe.difficulty.toLowerCase()] || recipe.difficulty) : recipe.difficulty;
     
-    document.getElementById("modal-recipe-prep").innerText = displayPrep;
-    document.getElementById("modal-recipe-cook").innerText = displayCook;
-    document.getElementById("modal-recipe-difficulty").className = `difficulty-tag ${recipe.difficulty.toLowerCase()}`;
-    document.getElementById("modal-recipe-difficulty").innerText = displayDiff;
+    const prepEl = document.getElementById("modal-recipe-prep");
+    if (prepEl) prepEl.innerText = displayPrep;
+
+    const cookEl = document.getElementById("modal-recipe-cook");
+    if (cookEl) cookEl.innerText = displayCook;
+
+    const diffEl = document.getElementById("modal-recipe-difficulty");
+    if (diffEl) {
+        diffEl.className = `difficulty-tag ${recipe.difficulty.toLowerCase()}`;
+        diffEl.innerText = displayDiff;
+    }
     
     // Favorite Button setup in Modal
     const modalFavBtn = document.getElementById("modal-favorite-btn");
-    modalFavBtn.className = `modal-action-btn ${isFavorite ? 'active' : ''}`;
-    modalFavBtn.innerHTML = isFavorite ? 
-        (isUrdu ? `<i class="fas fa-bookmark"></i> محفوظ شدہ` : `<i class="fas fa-bookmark"></i> Saved`) : 
-        (isUrdu ? `<i class="far fa-bookmark"></i> محفوظ کریں` : `<i class="far fa-bookmark"></i> Save Recipe`);
-    
-    modalFavBtn.onclick = () => {
-        toggleFavorite(recipe.id);
-    };
+    if (modalFavBtn) {
+        modalFavBtn.className = `modal-action-btn ${isFavorite ? 'active' : ''}`;
+        modalFavBtn.innerHTML = isFavorite ? 
+            (isUrdu ? `<i class="fas fa-bookmark"></i> محفوظ شدہ` : `<i class="fas fa-bookmark"></i> Saved`) : 
+            (isUrdu ? `<i class="far fa-bookmark"></i> محفوظ کریں` : `<i class="far fa-bookmark"></i> Save Recipe`);
+        
+        modalFavBtn.onclick = () => {
+            toggleFavorite(recipe.id);
+        };
+    }
 
     updateModalLabels();
 
     // Render Servings and Ingredients
     const servingsCountEl = document.getElementById("servings-count");
-    servingsCountEl.innerText = tempServings;
+    if (servingsCountEl) servingsCountEl.innerText = tempServings;
     
     renderIngredients(recipe, tempServings);
     renderInstructions(recipe);
@@ -3419,19 +3445,23 @@ function openRecipeDetails(recipe) {
     const decBtn = document.getElementById("servings-dec");
     const incBtn = document.getElementById("servings-inc");
     
-    decBtn.onclick = () => {
-        if (tempServings > 1) {
-            tempServings--;
-            servingsCountEl.innerText = tempServings;
-            renderIngredients(recipe, tempServings);
-        }
-    };
+    if (decBtn) {
+        decBtn.onclick = () => {
+            if (tempServings > 1) {
+                tempServings--;
+                if (servingsCountEl) servingsCountEl.innerText = tempServings;
+                renderIngredients(recipe, tempServings);
+            }
+        };
+    }
     
-    incBtn.onclick = () => {
-        tempServings++;
-        servingsCountEl.innerText = tempServings;
-        renderIngredients(recipe, tempServings);
-    };
+    if (incBtn) {
+        incBtn.onclick = () => {
+            tempServings++;
+            if (servingsCountEl) servingsCountEl.innerText = tempServings;
+            renderIngredients(recipe, tempServings);
+        };
+    }
     
     // Show Modal
     recipeModal.classList.add("show");
