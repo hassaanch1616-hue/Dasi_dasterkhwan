@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="ur">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Desi Dasterkhwan | Pakistani Cooking Recipes</title>
+    <meta name="description" content="Pakistani dishes ki lazeez aur behtareen recipes. Biryani, Nihari, Karahi aur bohat kuch, dynamic serving calculator aur timers ke sath.">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- CSS Stylesheet -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <!-- Header Section -->
+    <header>
+        <div class="container header-container">
+            <div class="logo-section">
+                <i class="fas fa-fire-burner logo-icon"></i>
+                <div class="logo-text" id="logo-text">Desi <span>Dasterkhwan</span></div>
+            </div>
+            <div class="header-actions">
+                <button class="btn-lang-toggle" id="lang-toggle-btn" aria-label="Language Toggle">
+                    <i class="fas fa-globe"></i>
+                    <span id="lang-btn-text">اردو</span>
+                </button>
+                <button class="btn-add-recipe" id="show-add-recipe-btn" aria-label="Nayi recipe shamil karein">
+                    <i class="fas fa-plus"></i>
+                    <span id="add-recipe-btn-text">Add Recipe</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <span class="hero-subtitle">Traditional Flavors, Modern Kitchen</span>
+            <h1>Pakistani <span>Dishes Ki Recipes</span></h1>
+            <p class="hero-desc">Apne pasandeeda Pakistani khanon ki recipes dhoondein aur ghor se cook kijiye hamare dynamic calculator aur cooking timers ke sath.</p>
+            
+            <!-- Search Box -->
+            <div class="search-container">
+                <input type="text" id="search-input" class="search-box" placeholder="Biryani, Nihari, Karahi ya koi bhi ingredient search karein..." aria-label="Recipes search karein">
+                <i class="fas fa-search search-icon"></i>
+            </div>
+        </div>
+    </section>
+
+    <!-- Filters Section -->
+    <section class="filter-section">
+        <div class="container">
+            <div class="category-scroll">
+                <button class="category-tab active" data-category="All" aria-label="Category All">Our Purpose</button>
+                <button class="category-tab" data-category="Breakfast" aria-label="Category Breakfast">Breakfast</button>
+                <button class="category-tab" data-category="Lunch" aria-label="Category Lunch">Lunch</button>
+                <button class="category-tab" data-category="BBQ" aria-label="Category BBQ">BBQ</button>
+                <button class="category-tab" data-category="Dinner" aria-label="Category Dinner">Dinner</button>
+                <button class="category-tab" data-category="Drinks" aria-label="Category Drinks">Drinks</button>
+                <button class="category-tab" data-category="Shakes" aria-label="Category Shakes">Shakes</button>
+                <button class="category-tab" data-category="Feedback" aria-label="Category Feedback"><i class="fas fa-comment-dots" style="margin-right:6px;"></i>Feedback</button>
+                <button class="category-tab" data-category="AIAssistant" aria-label="Category AI Assistant"><i class="fas fa-robot" style="margin-right:6px;"></i>AI Assistant</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Recipe Grid Section -->
+    <main class="recipe-section">
+        <div class="container">
+            <div class="recipe-grid" id="recipe-grid">
+                <!-- Recipe Cards will be injected here via JavaScript -->
+            </div>
+        </div>
+    </main>
+
+    <!-- Active Timer Floating Widget -->
+    <div class="active-timer-widget" id="active-timer-widget">
+        <div class="timer-icon-wrap">
+            <i class="fas fa-stopwatch"></i>
+            <div class="timer-pulse"></div>
+        </div>
+        <div class="timer-details">
+            <span class="timer-label" id="active-timer-label">Step Timer</span>
+            <span class="timer-clock" id="active-timer-clock">00:00</span>
+        </div>
+        <button class="timer-cancel-btn" id="active-timer-cancel" title="Cancel Timer" aria-label="Timer band karein">
+            <i class="fas fa-xmark"></i>
+        </button>
+    </div>
+
+    <!-- Recipe Details Modal -->
+    <div class="modal" id="recipe-modal" role="dialog" aria-modal="true" aria-labelledby="modal-recipe-title">
+        <div class="modal-content">
+            <button class="close-modal-btn" id="close-recipe-modal" aria-label="Close modal">&times;</button>
+            
+            <div class="modal-header-hero" id="modal-recipe-image" style="background-image: linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(13, 14, 18, 0.95)); background-size: cover; background-position: center;">
+                <div class="modal-header-overlay"></div>
+                <div class="modal-title-wrap">
+                    <h2 class="modal-recipe-title" id="modal-recipe-title">Sindhi Chicken Biryani</h2>
+                    <p class="modal-recipe-desc" id="modal-recipe-desc">A beautiful spiced dish...</p>
+                </div>
+            </div>
+
+            <div class="modal-body">
+                <!-- Summary bar -->
+                <div class="modal-summary-bar">
+                    <div class="modal-stats">
+                        <div class="stat-box">
+                            <span class="stat-label" id="label-prep">Prep Time</span>
+                            <span class="stat-value" id="modal-recipe-prep">25 Mins</span>
+                        </div>
+                        <div class="stat-box">
+                            <span class="stat-label" id="label-cook">Cook Time</span>
+                            <span class="stat-value" id="modal-recipe-cook">45 Mins</span>
+                        </div>
+                        <div class="stat-box">
+                            <span class="stat-label" id="label-difficulty">Difficulty</span>
+                            <span class="stat-value"><span class="difficulty-tag medium" id="modal-recipe-difficulty">Medium</span></span>
+                        </div>
+                    </div>
+                    <div class="modal-actions">
+                        <button class="modal-action-btn" id="modal-favorite-btn" aria-label="Bookmark this recipe">
+                            <i class="far fa-bookmark"></i> Bookmark Recipe
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Two Column Layout -->
+                <div class="recipe-layout-grid">
+                    <!-- Left: Ingredients Checklist -->
+                    <div class="ingredients-panel">
+                        <h4>
+                            <span id="label-ingredients">Ingredients</span>
+                            <div class="servings-controller">
+                                <button class="servings-btn" id="servings-dec" title="Decrease servings" aria-label="Servings kam karein">-</button>
+                                <span><span id="servings-count">4</span> <span id="label-servings-text">Servings</span></span>
+                                <button class="servings-btn" id="servings-inc" title="Increase servings" aria-label="Servings barhayein">+</button>
+                            </div>
+                        </h4>
+                        <div class="ingredients-list" id="modal-ingredients-list">
+                            <!-- Ingredients check list will be rendered here dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Right: Instructions -->
+                    <div class="instructions-panel">
+                        <h4 id="label-instructions">Instructions</h4>
+                        <div class="instructions-list" id="modal-instructions-list">
+                            <!-- Step list will be rendered here dynamically -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Recipe Modal -->
+    <div class="modal" id="add-recipe-modal" role="dialog" aria-modal="true" aria-labelledby="add-recipe-title-h">
+        <div class="modal-content">
+            <button class="close-modal-btn" id="close-add-recipe-modal" aria-label="Close modal">&times;</button>
+            <h2 class="form-title" id="add-recipe-title-h">Add New Recipe</h2>
+            
+            <form id="add-recipe-form">
+                <div class="add-recipe-body">
+                    <!-- Title & Category -->
+                    <div class="form-row-2">
+                        <div class="form-group">
+                            <label class="form-label" for="recipe-title">Recipe Title (Urdu or English)</label>
+                            <input type="text" id="recipe-title" required class="form-control" placeholder="e.g., Dum Kabob">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="recipe-category">Category</label>
+                            <select id="recipe-category" class="form-control" required>
+                                <option value="Breakfast">Breakfast / Nashta</option>
+                                <option value="Lunch">Lunch / Dopehar ka Khaana</option>
+                                <option value="BBQ">BBQ / Kabab</option>
+                                <option value="Dinner">Dinner / Raat ka Khaana</option>
+                                <option value="Drinks">Drinks / Mashroob</option>
+                                <option value="Shakes">Shakes</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Description -->
+                    <div class="form-group">
+                        <label class="form-label" for="recipe-desc">Short Description</label>
+                        <textarea id="recipe-desc" required class="form-control" rows="2" placeholder="Describe the aroma and flavor..."></textarea>
+                    </div>
+
+                    <!-- Times & Servings & Difficulty -->
+                    <div class="form-row-3">
+                        <div class="form-group">
+                            <label class="form-label" for="recipe-prep-time">Prep Time (minutes)</label>
+                            <input type="number" id="recipe-prep-time" required class="form-control" placeholder="e.g., 20">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="recipe-cook-time">Cook Time (minutes)</label>
+                            <input type="number" id="recipe-cook-time" required class="form-control" placeholder="e.g., 40">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="recipe-difficulty">Difficulty</label>
+                            <select id="recipe-difficulty" class="form-control">
+                                <option value="Easy">Easy</option>
+                                <option value="Medium" selected>Medium</option>
+                                <option value="Hard">Hard</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row-2" style="margin-bottom: 22px;">
+                        <div class="form-group">
+                            <label class="form-label" for="recipe-servings-val">Default Servings</label>
+                            <input type="number" id="recipe-servings-val" value="4" required class="form-control">
+                        </div>
+                    </div>
+
+                    <!-- Ingredients Section -->
+                    <div class="form-group">
+                        <label class="form-label">Ingredients</label>
+                        <div id="form-ingredients-list">
+                            <div class="form-ingredient-row">
+                                <input type="text" placeholder="Ingredient (e.g. Chicken)" required class="form-control ing-name">
+                                <input type="number" step="any" placeholder="Quantity" class="form-control ing-amt">
+                                <input type="text" placeholder="Unit (e.g. g)" class="form-control ing-unit">
+                            </div>
+                        </div>
+                        <button type="button" class="btn-form-add" id="form-add-ingredient">
+                            <i class="fas fa-plus"></i> Add Ingredient
+                        </button>
+                    </div>
+
+                    <!-- Steps Section -->
+                    <div class="form-group">
+                        <label class="form-label">Cooking Steps</label>
+                        <div id="form-steps-list">
+                            <div class="form-step-row">
+                                <span class="form-step-num"></span>
+                                <textarea placeholder="Step text (e.g. Sauté the onions for 10 minutes until golden)" required class="form-control step-text" rows="2"></textarea>
+                            </div>
+                        </div>
+                        <button type="button" class="btn-form-add" id="form-add-step">
+                            <i class="fas fa-plus"></i> Add Cooking Step
+                        </button>
+                    </div>
+
+                    <!-- Action buttons -->
+                    <div class="form-submit-bar">
+                        <button type="button" class="btn-secondary" id="close-add-recipe-modal">Cancel</button>
+                        <button type="submit" class="btn-primary">Save Recipe</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Script File -->
+    <script src="app.js?v=1.3"></script>
+</body>
+</html>
