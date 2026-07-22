@@ -3381,6 +3381,7 @@ window.closeModal = function() {
     const recipeModal = getRecipeModal();
     if (recipeModal) {
         recipeModal.classList.remove("show");
+        recipeModal.style.display = "none";
         document.body.style.overflow = "auto";
     }
 };
@@ -3391,7 +3392,11 @@ function openRecipeDetails(recipe) {
     if (!recipeModal || !recipe) return;
 
     selectedRecipe = recipe;
-    let tempServings = recipe.servings;
+    let prepTime = recipe.prepTime || 15;
+    let cookTime = recipe.cookTime || 30;
+    let difficulty = recipe.difficulty || "Medium";
+    let servings = recipe.servings || 4;
+    let tempServings = servings;
     
     const isFavorite = favoriteRecipes.includes(recipe.id);
     const lang = currentLanguage;
@@ -3401,17 +3406,21 @@ function openRecipeDetails(recipe) {
     
     // Populate Modal Info
     const titleEl = document.getElementById("modal-recipe-title");
-    if (titleEl) titleEl.innerText = translatedRecipe.title || recipe.title;
+    if (titleEl) titleEl.innerText = translatedRecipe.title || recipe.title || "Pakistani Dish";
 
     const descEl = document.getElementById("modal-recipe-desc");
-    if (descEl) descEl.innerText = translatedRecipe.description || recipe.description;
+    if (descEl) descEl.innerText = translatedRecipe.description || recipe.description || "";
 
     const imgEl = document.getElementById("modal-recipe-image");
-    if (imgEl) imgEl.style.backgroundImage = `linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.6)), url('${recipe.image}'), url('karahi_1784531967565.png')`;
+    if (imgEl) {
+        const bgImg = recipe.image || 'karahi_1784531967565.png';
+        imgEl.style.backgroundImage = `linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.6)), url('${bgImg}'), url('karahi_1784531967565.png')`;
+    }
     
-    const displayPrep = isUrdu ? `${recipe.prepTime} منٹ` : `${recipe.prepTime} Mins`;
-    const displayCook = isUrdu ? `${recipe.cookTime} منٹ` : `${recipe.cookTime} Mins`;
-    const displayDiff = isUrdu ? (UI_TRANSLATIONS[lang][recipe.difficulty.toLowerCase()] || recipe.difficulty) : recipe.difficulty;
+    const displayPrep = isUrdu ? `${prepTime} منٹ` : `${prepTime} Mins`;
+    const displayCook = isUrdu ? `${cookTime} منٹ` : `${cookTime} Mins`;
+    const diffLower = difficulty.toLowerCase();
+    const displayDiff = isUrdu ? (UI_TRANSLATIONS[lang][diffLower] || difficulty) : difficulty;
     
     const prepEl = document.getElementById("modal-recipe-prep");
     if (prepEl) prepEl.innerText = displayPrep;
@@ -3421,7 +3430,7 @@ function openRecipeDetails(recipe) {
 
     const diffEl = document.getElementById("modal-recipe-difficulty");
     if (diffEl) {
-        diffEl.className = `difficulty-tag ${recipe.difficulty.toLowerCase()}`;
+        diffEl.className = `difficulty-tag ${diffLower}`;
         diffEl.innerText = displayDiff;
     }
     
@@ -3470,6 +3479,7 @@ function openRecipeDetails(recipe) {
     }
     
     // Show Modal
+    recipeModal.style.display = "flex";
     recipeModal.classList.add("show");
     document.body.style.overflow = "hidden";
 }
