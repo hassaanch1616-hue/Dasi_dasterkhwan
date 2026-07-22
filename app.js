@@ -2817,6 +2817,12 @@ function setupEventListeners() {
         }
     });
 
+    document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+            window.closeModal();
+        }
+    });
+
     // Show Add Recipe Form Modal
     const showAddRecipeBtn = document.getElementById("show-add-recipe-btn");
     if (showAddRecipeBtn) {
@@ -3370,14 +3376,14 @@ window.toggleFavorite = function(recipeId) {
     }
 };
 
-// Close Recipe Detail Modal
-function closeModal() {
+// Close Recipe Detail Modal (Global)
+window.closeModal = function() {
     const recipeModal = getRecipeModal();
     if (recipeModal) {
         recipeModal.classList.remove("show");
         document.body.style.overflow = "auto";
     }
-}
+};
 
 // Open Recipe Detail Modal
 function openRecipeDetails(recipe) {
