@@ -1466,6 +1466,7 @@ const UI_TRANSLATIONS = {
         logoText: "Desi <span>Dasterkhwan</span>",
         langBtn: "اردو",
         addRecipe: "Add Recipe",
+        adminBtn: "Admin",
         purposeTitle: "Hamara Maqsad | Our Purpose",
         purposeDesc: "Desi Dasterkhwan ka maqsad traditional Pakistani recipe heritage ko zinda rakhna aur aapke kitchen ko digital features ke sath modern banana hai. Hum chahte hain ke har koi lazeez aur behtareen khane aasaani se cook kar sake, hamare <span>dynamic servings calculator</span> aur <span>step-by-step cooking timers</span> ke sath.",
         heritageTitle: "Heritage Recipes",
@@ -1495,13 +1496,15 @@ const UI_TRANSLATIONS = {
             "Drinks": "Drinks",
             "Shakes": "Shakes",
             "Feedback": "Feedback",
-            "AIAssistant": "AI Assistant"
+            "AIAssistant": "AI Assistant",
+            "Admin": "Admin Portal"
         }
     },
     ur: {
         logoText: "دیسی <span>دسترخوان</span>",
         langBtn: "English",
         addRecipe: "ریسپى شامل کریں",
+        adminBtn: "ایڈمن",
         purposeTitle: "ہمارا مقصد",
         purposeDesc: "دیسی دسترخوان کا مقصد روایتی پاکستانی پکوانوں کے ورثے کو زندہ رکھنا اور آپ کے باورچی خانے کو ڈیجیٹل خصوصیات کے ساتھ جدید بنانا ہے۔ ہم چاہتے ہیں کہ ہر کوئی ہمارے <span>ڈائنامک سرونگ کیلکولیٹر</span> اور <span>مرحلہ وار کوکنگ ٹائمرز</span> کے ساتھ آسانی سے پکا سکے۔",
         heritageTitle: "روایتی پکوان",
@@ -1531,7 +1534,8 @@ const UI_TRANSLATIONS = {
             "Drinks": "مشروبات",
             "Shakes": "شیکس",
             "Feedback": "رائے / تاثرات",
-            "AIAssistant": "اے آئی اسسٹنٹ"
+            "AIAssistant": "اے آئی اسسٹنٹ",
+            "Admin": "ایڈمن پورٹل"
         }
     }
 };
@@ -2483,9 +2487,6 @@ const RECIPE_TRANSLATIONS = {
         instructions: [
             "کھجوروں کو گرم دودھ میں 10 منٹ بھیگو کر نرم کریں۔",
             "کھجوریں، کیلے، دودھ اور شہد بلینڈ کریں۔",
-            "سموتھ ہونے تک تیز بلینڈ کریں اور پیش کریں۔"
-        ]
-    },
     "recipe-brownieshake": {
         title: "چاکلیٹ براؤنی شیک",
         description: "چاکلیٹ براؤنی کے ٹکڑوں اور چاکلیٹ آئس کریم کا کریمی شیک۔",
@@ -2679,6 +2680,9 @@ function updateLanguage() {
     
     const addRecipeBtnText = document.getElementById("add-recipe-btn-text");
     if (addRecipeBtnText) addRecipeBtnText.innerText = UI_TRANSLATIONS[lang].addRecipe;
+
+    const adminBtnText = document.getElementById("admin-btn-text");
+    if (adminBtnText) adminBtnText.innerText = UI_TRANSLATIONS[lang].adminBtn;
     
     const addRecipeTitleH = document.getElementById("add-recipe-title-h");
     if (addRecipeTitleH) addRecipeTitleH.innerText = isUrdu ? "نئی ریسپی شامل کریں" : "Add New Recipe";
@@ -2739,6 +2743,20 @@ function setupEventListeners() {
             localStorage.setItem("desi_dasterkhwan_lang", currentLanguage);
             updateLanguage();
             renderRecipes();
+        });
+    }
+
+    // Admin Portal header button click
+    const showAdminBtn = document.getElementById("show-admin-btn");
+    if (showAdminBtn) {
+        showAdminBtn.addEventListener("click", () => {
+            document.querySelectorAll(".category-tab").forEach(t => t.classList.remove("active"));
+            const adminTab = document.querySelector('.category-tab[data-category="Admin"]');
+            if (adminTab) adminTab.classList.add("active");
+            currentCategory = "Admin";
+            renderRecipes();
+            const filterSection = document.querySelector(".filter-section");
+            if (filterSection) filterSection.scrollIntoView({ behavior: "smooth" });
         });
     }
 
@@ -2904,6 +2922,58 @@ function escapeHtml(str) {
     });
 }
 
+// Admin Portal Logic & Authentication
+let ADMIN_USERNAME = "hassaan";
+let ADMIN_PASSWORD = "zunain";
+
+function isAdminLoggedIn() {
+    return sessionStorage.getItem("desi_admin_logged_in") === "true";
+}
+
+window.handleAdminLogin = function(e) {
+    e.preventDefault();
+    const userInput = document.getElementById("admin-user");
+    const passInput = document.getElementById("admin-pass");
+    if (!userInput || !passInput) return;
+    const enteredUser = userInput.value.trim();
+    const enteredPass = passInput.value.trim();
+    const isUrdu = currentLanguage === "ur";
+    
+    if (enteredUser.toLowerCase() === ADMIN_USERNAME.toLowerCase() && enteredPass === ADMIN_PASSWORD) {
+        sessionStorage.setItem("desi_admin_logged_in", "true");
+        renderRecipes();
+    } else {
+        const errEl = document.getElementById("admin-login-err");
+        if (errEl) {
+            errEl.style.display = "block";
+            errEl.innerText = isUrdu ? "غلط یوزر نیم یا پاس ورڈ!" : "Incorrect Username or Password!";
+        }
+    }
+};
+
+window.handleAdminLogout = function() {
+    sessionStorage.removeItem("desi_admin_logged_in");
+    renderRecipes();
+};
+
+window.deleteFeedbackItem = function(index) {
+    const isUrdu = currentLanguage === "ur";
+    if (confirm(isUrdu ? 'کیا آپ اس رائے کو حذف کرنا چاہتے ہیں؟' : 'Are you sure you want to delete this feedback?')) {
+        savedFeedbacks.splice(index, 1);
+        localStorage.setItem("desi_dasterkhwan_feedbacks", JSON.stringify(savedFeedbacks));
+        renderRecipes();
+    }
+};
+
+window.clearAllFeedbacks = function() {
+    const isUrdu = currentLanguage === "ur";
+    if (confirm(isUrdu ? 'کیا آپ تمام تاثرات کو حذف کرنا چاہتے ہیں؟' : 'Are you sure you want to delete ALL feedbacks?')) {
+        savedFeedbacks = [];
+        localStorage.setItem("desi_dasterkhwan_feedbacks", JSON.stringify(savedFeedbacks));
+        renderRecipes();
+    }
+};
+
 // Groq AI Assistant Logic
 let aiChatHistory = [];
 
@@ -3068,6 +3138,125 @@ function renderRecipes() {
     recipeGrid.innerHTML = "";
     const lang = currentLanguage;
     const isUrdu = lang === "ur";
+
+    if (currentCategory === "Admin") {
+        const adminCard = document.createElement("div");
+        adminCard.className = "admin-portal-card";
+
+        if (!isAdminLoggedIn()) {
+            adminCard.innerHTML = `
+                <div class="admin-login-box">
+                    <div class="admin-login-header">
+                        <i class="fas fa-user-shield admin-login-icon"></i>
+                        <h2>${isUrdu ? "ایڈمن پورٹل لاگ ان" : "Admin Portal Login"}</h2>
+                        <p>${isUrdu ? "صارفین کی رائے اور پورٹل تک رسائی کے لیے پاس ورڈ درج کریں۔" : "Enter admin password to view customer feedbacks and portal management."}</p>
+                    </div>
+                    
+                    <form onsubmit="handleAdminLogin(event)" class="admin-login-form">
+                        <div class="form-group">
+                            <label for="admin-user">${isUrdu ? "یوزر نیم (Username)" : "Username"}</label>
+                            <input type="text" id="admin-user" required placeholder="${isUrdu ? 'یوزر نیم درج کریں...' : 'Enter username...'}" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="admin-pass">${isUrdu ? "پاس ورڈ (Password)" : "Password"}</label>
+                            <input type="password" id="admin-pass" required placeholder="••••••••" class="form-control">
+                        </div>
+                        <button type="submit" class="btn-submit-admin-login">
+                            <i class="fas fa-right-to-bracket"></i> ${isUrdu ? "لاگ ان کریں" : "Login to Admin"}
+                        </button>
+                        <div id="admin-login-err" class="admin-login-err" style="display:none;"></div>
+                    </form>
+                </div>
+            `;
+            recipeGrid.appendChild(adminCard);
+            return;
+        }
+
+        // Authenticated Admin Dashboard UI
+        const totalFeedbacks = savedFeedbacks.length;
+        let avgRating = 5;
+        if (totalFeedbacks > 0) {
+            const sum = savedFeedbacks.reduce((acc, curr) => acc + parseInt(curr.rating || 5), 0);
+            avgRating = (sum / totalFeedbacks).toFixed(1);
+        }
+
+        let feedbackRowsHtml = "";
+        if (totalFeedbacks === 0) {
+            feedbackRowsHtml = `<div class="no-data-msg">${isUrdu ? 'ابھی تک کوئی رائے موصول نہیں ہوئی۔' : 'No customer feedback received yet.'}</div>`;
+        } else {
+            savedFeedbacks.forEach((fb, idx) => {
+                const starsCount = parseInt(fb.rating || 5);
+                const stars = "★".repeat(starsCount) + "☆".repeat(5 - starsCount);
+                feedbackRowsHtml += `
+                    <div class="admin-feedback-item">
+                        <div class="admin-fb-header">
+                            <div>
+                                <h4>${escapeHtml(fb.name)} <span class="fb-email">(${escapeHtml(fb.email)})</span></h4>
+                                <span class="fb-date"><i class="far fa-calendar-alt"></i> ${fb.date}</span>
+                            </div>
+                            <div class="admin-fb-actions">
+                                <span class="fb-stars">${stars}</span>
+                                <button type="button" onclick="deleteFeedbackItem(${idx})" class="btn-delete-fb" title="Delete">
+                                    <i class="fas fa-trash-alt"></i> ${isUrdu ? 'حذف کریں' : 'Delete'}
+                                </button>
+                            </div>
+                        </div>
+                        <p class="admin-fb-text">${escapeHtml(fb.comments)}</p>
+                    </div>
+                `;
+            });
+        }
+
+        adminCard.innerHTML = `
+            <div class="admin-dashboard">
+                <div class="admin-dash-header">
+                    <div>
+                        <h2><i class="fas fa-user-shield"></i> ${isUrdu ? "ایڈمن ڈیش بورڈ" : "Admin Dashboard"}</h2>
+                        <p>${isUrdu ? "تمام کسٹمر فید بیک اور پورٹل کا انتظام" : "Overview of customer feedback and application statistics"}</p>
+                    </div>
+                    <button onclick="handleAdminLogout()" class="btn-admin-logout">
+                        <i class="fas fa-sign-out-alt"></i> ${isUrdu ? "لاگ آؤٹ" : "Logout"}
+                    </button>
+                </div>
+
+                <div class="admin-stats-grid">
+                    <div class="stat-card">
+                        <i class="fas fa-comments stat-icon"></i>
+                        <div>
+                            <span class="stat-num">${totalFeedbacks}</span>
+                            <span class="stat-label">${isUrdu ? "کل رائے" : "Total Feedbacks"}</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-star stat-icon"></i>
+                        <div>
+                            <span class="stat-num">${avgRating} ★</span>
+                            <span class="stat-label">${isUrdu ? "اوسط ریٹنگ" : "Average Rating"}</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-utensils stat-icon"></i>
+                        <div>
+                            <span class="stat-num">${recipesList.length}</span>
+                            <span class="stat-label">${isUrdu ? "کل ریسپیز" : "Total Recipes"}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="admin-feedbacks-section">
+                    <div class="admin-sec-header">
+                        <h3><i class="fas fa-comment-dots"></i> ${isUrdu ? "صارفین کی رائے کی فہرست" : "Customer Feedbacks List"}</h3>
+                        ${totalFeedbacks > 0 ? `<button onclick="clearAllFeedbacks()" class="btn-clear-all"><i class="fas fa-trash"></i> ${isUrdu ? 'تمام حذف کریں' : 'Clear All'}</button>` : ''}
+                    </div>
+                    <div class="admin-feedbacks-list">
+                        ${feedbackRowsHtml}
+                    </div>
+                </div>
+            </div>
+        `;
+        recipeGrid.appendChild(adminCard);
+        return;
+    }
     
     if (currentCategory === "AIAssistant") {
         const storedKey = getStoredGroqKey();
