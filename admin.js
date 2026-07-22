@@ -153,10 +153,36 @@ function updateLanguageUI() {
     if (logoText) logoText.innerHTML = isUrdu ? 'دیسی <span>دسترخوان</span> <small style="font-size:0.5em; opacity:0.8; color:var(--color-primary);">ایڈمن</small>' : 'Desi <span>Dasterkhwan</span> <small style="font-size:0.5em; opacity:0.8; color:var(--color-primary);">Admin</small>';
 }
 
+let userHasTypedUser = false;
+let userHasTypedPass = false;
+
+window.onUserTypedField = function(fieldType) {
+    if (fieldType === 'user') userHasTypedUser = true;
+    if (fieldType === 'pass') userHasTypedPass = true;
+};
+
+// Security Loop: Every 40ms, if user has NOT physically typed on their keyboard, wipe browser autofills!
+setInterval(() => {
+    if (!isAdminLoggedIn()) {
+        const u = document.getElementById("ad_usr_field");
+        const p = document.getElementById("ad_pwd_field");
+        if (u && !userHasTypedUser && u.value !== "") {
+            u.value = "";
+        }
+        if (p && !userHasTypedPass && p.value !== "") {
+            p.value = "";
+        }
+    }
+}, 40);
+
 function renderAdminPortal() {
     updateLanguageUI();
     const appEl = document.getElementById("admin-app");
     if (!appEl) return;
+
+    // Reset user typing flags on fresh render
+    userHasTypedUser = false;
+    userHasTypedPass = false;
 
     const isUrdu = currentLanguage === "ur";
     savedFeedbacks = JSON.parse(localStorage.getItem("desi_dasterkhwan_feedbacks") || "[]");
@@ -175,11 +201,11 @@ function renderAdminPortal() {
                     <div id="admin-login-form" class="admin-login-form">
                         <div class="form-group">
                             <label for="ad_usr_field"><i class="fas fa-user"></i> ${isUrdu ? "یوزر نیم (Username)" : "Username"}</label>
-                            <input type="search" id="ad_usr_field" name="q_search_usr" required placeholder="${isUrdu ? 'اپنا یوزر نیم درج کریں...' : 'Enter your username...'}" class="form-control" autocomplete="off" value="" onkeydown="if(event.key==='Enter') document.getElementById('btn-admin-submit-trigger').click()">
+                            <input type="text" id="ad_usr_field" name="q_search_usr" required placeholder="${isUrdu ? 'اپنا یوزر نیم درج کریں...' : 'Enter your username...'}" class="form-control" autocomplete="off" value="" oninput="onUserTypedField('user')" onkeydown="if(event.key==='Enter') document.getElementById('btn-admin-submit-trigger').click()">
                         </div>
                         <div class="form-group">
                             <label for="ad_pwd_field"><i class="fas fa-key"></i> ${isUrdu ? "پاس ورڈ (Password)" : "Password"}</label>
-                            <input type="text" id="ad_pwd_field" name="q_search_pwd" required placeholder="••••••••" class="form-control" autocomplete="off" value="" style="-webkit-text-security: disc; text-security: disc;" onkeydown="if(event.key==='Enter') document.getElementById('btn-admin-submit-trigger').click()">
+                            <input type="text" id="ad_pwd_field" name="q_search_pwd" required placeholder="••••••••" class="form-control" autocomplete="off" value="" style="-webkit-text-security: disc; text-security: disc;" oninput="onUserTypedField('pass')" onkeydown="if(event.key==='Enter') document.getElementById('btn-admin-submit-trigger').click()">
                         </div>
                         <button type="button" id="btn-admin-submit-trigger" onclick="handleAdminLogin(event)" class="btn-submit-admin-login">
                             <i class="fas fa-right-to-bracket"></i> ${isUrdu ? "سیکیور لاگ ان" : "Secure Admin Login"}
@@ -191,15 +217,6 @@ function renderAdminPortal() {
                 </div>
             </div>
         `;
-        
-        // Force clear any autofill values
-        const clearInputs = () => {
-            const u = document.getElementById("ad_usr_field");
-            const p = document.getElementById("ad_pwd_field");
-            if (u && document.activeElement !== u) u.value = "";
-            if (p && document.activeElement !== p) p.value = "";
-        };
-        [10, 50, 100, 300, 500, 1000].forEach(t => setTimeout(clearInputs, t));
         return;
     }
 
