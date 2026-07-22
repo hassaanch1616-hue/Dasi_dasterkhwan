@@ -2747,19 +2747,12 @@ function setupEventListeners() {
         });
     }
 
-    // Footer Admin Portal button click
-    const footerAdminBtn = document.getElementById("footer-admin-btn");
-    if (footerAdminBtn) {
-        footerAdminBtn.addEventListener("click", () => {
-            document.querySelectorAll(".category-tab").forEach(t => t.classList.remove("active"));
-            const adminTab = document.querySelector('.category-tab[data-category="Admin"]');
-            if (adminTab) adminTab.classList.add("active");
-            currentCategory = "Admin";
-            renderRecipes();
-            const filterSection = document.querySelector(".filter-section");
-            if (filterSection) filterSection.scrollIntoView({ behavior: "smooth" });
+    // Footer Admin Portal link navigation
+    document.querySelectorAll("#footer-admin-btn, .footer-admin-link, #show-admin-btn").forEach(btn => {
+        btn.addEventListener("click", (e) => {
+            window.location.href = "admin.html";
         });
-    }
+    });
 
     // Search functionality
     searchInput.addEventListener("input", (e) => {
