@@ -1,39 +1,105 @@
 // Admin Portal Dedicated Script (admin.js)
 
-const ADMIN_USERNAME = "hassaan";
-const ADMIN_PASSWORD = "zunain";
+// Retrieve custom admin credentials if set, or default to hassaan / zunain
+function getAdminCredentials() {
+    const custom = JSON.parse(localStorage.getItem("desi_admin_creds") || "null");
+    if (custom && custom.username && custom.password) {
+        return custom;
+    }
+    return { username: "hassaan", password: "zunain" };
+}
 
 let currentLanguage = localStorage.getItem("desi_dasterkhwan_lang") || "ur";
 let savedFeedbacks = JSON.parse(localStorage.getItem("desi_dasterkhwan_feedbacks") || "[]");
+let failedAttempts = parseInt(sessionStorage.getItem("desi_admin_failed_attempts") || "0");
 
 function isAdminLoggedIn() {
     return sessionStorage.getItem("desi_admin_logged_in") === "true";
 }
 
+function checkLockout() {
+    const lockoutUntil = parseInt(localStorage.getItem("desi_admin_lockout_until") || "0");
+    if (Date.now() < lockoutUntil) {
+        const remainingSecs = Math.ceil((lockoutUntil - Date.now()) / 1000);
+        return remainingSecs;
+    }
+    return 0;
+}
+
 function handleAdminLogin(e) {
     e.preventDefault();
+    const isUrdu = currentLanguage === "ur";
+    const errEl = document.getElementById("admin-login-err");
+
+    // Check Lockout
+    const remainingSecs = checkLockout();
+    if (remainingSecs > 0) {
+        if (errEl) {
+            errEl.style.display = "block";
+            errEl.innerText = isUrdu ? 
+                `🔒 حد سے زیادہ غلط کوششیں! پورٹل ${remainingSecs} سیکنڈ کے لیے لاک ہے۔` : 
+                `🔒 Too many failed attempts! Portal locked for ${remainingSecs} seconds.`;
+        }
+        return;
+    }
+
     const userInput = document.getElementById("admin-user");
     const passInput = document.getElementById("admin-pass");
     if (!userInput || !passInput) return;
     
     const enteredUser = userInput.value.trim();
     const enteredPass = passInput.value.trim();
-    const isUrdu = currentLanguage === "ur";
+    const creds = getAdminCredentials();
 
-    if (enteredUser.toLowerCase() === ADMIN_USERNAME.toLowerCase() && enteredPass === ADMIN_PASSWORD) {
+    if (enteredUser.toLowerCase() === creds.username.toLowerCase() && enteredPass === creds.password) {
         sessionStorage.setItem("desi_admin_logged_in", "true");
+        sessionStorage.setItem("desi_admin_failed_attempts", "0");
+        localStorage.removeItem("desi_admin_lockout_until");
         renderAdminPortal();
     } else {
-        const errEl = document.getElementById("admin-login-err");
-        if (errEl) {
-            errEl.style.display = "block";
-            errEl.innerText = isUrdu ? "غلط یوزر نیم یا پاس ورڈ!" : "Incorrect Username or Password!";
+        failedAttempts++;
+        sessionStorage.setItem("desi_admin_failed_attempts", failedAttempts.toString());
+        
+        if (failedAttempts >= 3) {
+            // Lockout for 3 minutes (180,000 ms)
+            const lockUntil = Date.now() + 180000;
+            localStorage.setItem("desi_admin_lockout_until", lockUntil.toString());
+            sessionStorage.setItem("desi_admin_failed_attempts", "0");
+            if (errEl) {
+                errEl.style.display = "block";
+                errEl.innerText = isUrdu ? 
+                    "🔒 3 بار غلط لاگ ان! پورٹل 3 منٹ کے لیے لاک کر دیا گیا ہے۔" : 
+                    "🔒 3 failed login attempts! Portal locked for 3 minutes.";
+            }
+        } else {
+            if (errEl) {
+                errEl.style.display = "block";
+                errEl.innerText = isUrdu ? 
+                    `غلط یوزر نیم یا پاس ورڈ! (باقیماندہ کوششیں: ${3 - failedAttempts})` : 
+                    `Incorrect Username or Password! (${3 - failedAttempts} attempts remaining)`;
+            }
         }
     }
 }
 
 function handleAdminLogout() {
     sessionStorage.removeItem("desi_admin_logged_in");
+    renderAdminPortal();
+}
+
+function updateAdminCredentials(e) {
+    e.preventDefault();
+    const newUser = document.getElementById("new-admin-user").value.trim();
+    const newPass = document.getElementById("new-admin-pass").value.trim();
+    const isUrdu = currentLanguage === "ur";
+
+    if (!newUser || !newPass) {
+        alert(isUrdu ? "برائے مہربانی نیا یوزر نیم اور پاس ورڈ درج کریں!" : "Please enter both new username and password!");
+        return;
+    }
+
+    localStorage.setItem("desi_admin_creds", JSON.stringify({ username: newUser, password: newPass }));
+    alert(isUrdu ? "✅ ایڈمن کریڈینشلز کامیابی سے اپ ڈیٹ ہو گئے۔" : "✅ Admin credentials updated successfully!");
     renderAdminPortal();
 }
 
@@ -96,28 +162,31 @@ function renderAdminPortal() {
     savedFeedbacks = JSON.parse(localStorage.getItem("desi_dasterkhwan_feedbacks") || "[]");
 
     if (!isAdminLoggedIn()) {
+        const lockoutRemaining = checkLockout();
         appEl.innerHTML = `
             <div class="admin-portal-card" style="max-width:480px;">
                 <div class="admin-login-box">
                     <div class="admin-login-header">
-                        <i class="fas fa-user-shield admin-login-icon"></i>
+                        <i class="fas fa-shield-halved admin-login-icon" style="color:var(--color-primary);"></i>
                         <h2>${isUrdu ? "ایڈمن پورٹل لاگ ان" : "Admin Portal Login"}</h2>
-                        <p>${isUrdu ? "صارفین کی رائے دیکھنے کے لیے اپنے کریڈینشلز درج کریں۔" : "Enter admin username & password to access portal."}</p>
+                        <p>${isUrdu ? "صرف ایڈمن کے لیے۔ لاگ ان کرنے کے لیے یوزر نیم اور پاس ورڈ درج کریں۔" : "Authorized Admin access only. Enter your credentials to login."}</p>
                     </div>
                     
                     <form id="admin-login-form" class="admin-login-form">
                         <div class="form-group">
-                            <label for="admin-user">${isUrdu ? "یوزر نیم (Username)" : "Username"}</label>
-                            <input type="text" id="admin-user" required placeholder="${isUrdu ? 'یوزر نیم درج کریں...' : 'Enter username...'}" class="form-control" value="hassaan">
+                            <label for="admin-user"><i class="fas fa-user"></i> ${isUrdu ? "یوزر نیم (Username)" : "Username"}</label>
+                            <input type="text" id="admin-user" required placeholder="${isUrdu ? 'اپنا یوزر نیم درج کریں...' : 'Enter your username...'}" class="form-control" autocomplete="off">
                         </div>
                         <div class="form-group">
-                            <label for="admin-pass">${isUrdu ? "پاس ورڈ (Password)" : "Password"}</label>
-                            <input type="password" id="admin-pass" required placeholder="••••••••" class="form-control" value="zunain">
+                            <label for="admin-pass"><i class="fas fa-key"></i> ${isUrdu ? "پاس ورڈ (Password)" : "Password"}</label>
+                            <input type="password" id="admin-pass" required placeholder="••••••••" class="form-control" autocomplete="off">
                         </div>
                         <button type="submit" class="btn-submit-admin-login">
-                            <i class="fas fa-right-to-bracket"></i> ${isUrdu ? "لاگ ان کریں" : "Login to Admin"}
+                            <i class="fas fa-right-to-bracket"></i> ${isUrdu ? "سیکیور لاگ ان" : "Secure Admin Login"}
                         </button>
-                        <div id="admin-login-err" class="admin-login-err" style="display:none; margin-top:12px;"></div>
+                        <div id="admin-login-err" class="admin-login-err" style="${lockoutRemaining > 0 ? 'display:block;' : 'display:none;'} margin-top:14px;">
+                            ${lockoutRemaining > 0 ? (isUrdu ? `🔒 پورٹل ${lockoutRemaining} سیکنڈ کے لیے لاک ہے۔` : `🔒 Portal locked for ${lockoutRemaining}s.`) : ''}
+                        </div>
                     </form>
                 </div>
             </div>
@@ -127,7 +196,7 @@ function renderAdminPortal() {
         return;
     }
 
-    // Dashboard View
+    // Authenticated Dashboard View
     const totalFeedbacks = savedFeedbacks.length;
     let avgRating = 5;
     if (totalFeedbacks > 0) {
@@ -162,13 +231,15 @@ function renderAdminPortal() {
         });
     }
 
+    const currentCreds = getAdminCredentials();
+
     appEl.innerHTML = `
         <div class="admin-portal-card">
             <div class="admin-dashboard">
                 <div class="admin-dash-header">
                     <div>
                         <h2><i class="fas fa-user-shield"></i> ${isUrdu ? "ایڈمن ڈیش بورڈ" : "Admin Dashboard"}</h2>
-                        <p>${isUrdu ? "تمام کسٹمر فید بیک اور پورٹل کا انتظامی کنٹرول" : "Overview of customer feedback and application stats"}</p>
+                        <p>${isUrdu ? "خوش آمدید Hassaan! تمام کسٹمر فید بیکس اور پورٹل مینیج کریں" : "Welcome Hassaan! Manage customer feedbacks & settings"}</p>
                     </div>
                     <div style="display:flex; gap:10px;">
                         <a href="index.html" class="btn-admin-logout" style="text-decoration:none; background:var(--color-bg); color:var(--color-text-primary); border-color:var(--color-border);">
@@ -204,7 +275,7 @@ function renderAdminPortal() {
                     </div>
                 </div>
 
-                <div class="admin-feedbacks-section">
+                <div class="admin-feedbacks-section" style="margin-bottom:40px;">
                     <div class="admin-sec-header">
                         <h3><i class="fas fa-comment-dots"></i> ${isUrdu ? "صارفین کی رائے کی فہرست" : "Customer Feedbacks List"}</h3>
                         ${totalFeedbacks > 0 ? `<button onclick="clearAllFeedbacks()" class="btn-clear-all"><i class="fas fa-trash"></i> ${isUrdu ? 'تمام حذف کریں' : 'Clear All'}</button>` : ''}
@@ -213,9 +284,33 @@ function renderAdminPortal() {
                         ${feedbackRowsHtml}
                     </div>
                 </div>
+
+                <!-- Admin Security Credentials Update Box -->
+                <div class="admin-security-card" style="background:var(--color-bg); border:1px solid var(--color-border); padding:24px; border-radius:18px;">
+                    <h3 style="margin-top:0; font-family:var(--font-heading); font-size:1.3rem; color:var(--color-text-primary);">
+                        <i class="fas fa-user-lock" style="color:var(--color-primary); margin-right:8px;"></i> 
+                        ${isUrdu ? "ایڈمن لاگ ان کریڈینشلز تبدیل کریں" : "Update Admin Login Credentials"}
+                    </h3>
+                    <form id="update-creds-form" style="display:flex; flex-wrap:wrap; gap:16px; align-items:flex-end;">
+                        <div class="form-group" style="flex:1; min-width:200px; margin:0;">
+                            <label for="new-admin-user">${isUrdu ? "نیا یوزر نیم" : "New Username"}</label>
+                            <input type="text" id="new-admin-user" required value="${escapeHtml(currentCreds.username)}" class="form-control">
+                        </div>
+                        <div class="form-group" style="flex:1; min-width:200px; margin:0;">
+                            <label for="new-admin-pass">${isUrdu ? "نیا پاس ورڈ" : "New Password"}</label>
+                            <input type="text" id="new-admin-pass" required value="${escapeHtml(currentCreds.password)}" class="form-control">
+                        </div>
+                        <button type="submit" class="btn-primary" style="padding:12px 24px;">
+                            <i class="fas fa-save"></i> ${isUrdu ? "محفوظ کریں" : "Save Credentials"}
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
     `;
+
+    const credsForm = document.getElementById("update-creds-form");
+    if (credsForm) credsForm.addEventListener("submit", updateAdminCredentials);
 }
 
 // Event Listeners
